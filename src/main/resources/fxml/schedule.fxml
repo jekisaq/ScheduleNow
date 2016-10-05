@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65">
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.jeki.schedulenow.controllers.ScheduleController">
    <children>
       <GridPane alignment="CENTER">
          <columnConstraints>
@@ -24,13 +16,13 @@
          <children>
             <SplitPane dividerPositions="0.27591973244147155" prefHeight="400.0" prefWidth="600.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
               <items>
-                  <ListView prefHeight="200.0" prefWidth="200.0" />
-                  <TableView prefHeight="200.0" prefWidth="200.0">
+                  <ListView fx:id="daysListView" onMouseClicked="#onDayOfWeekChosen" prefHeight="200.0" prefWidth="200.0" />
+                  <TableView fx:id="scheduleTable" prefHeight="200.0" prefWidth="200.0">
                     <columns>
-                      <TableColumn prefWidth="41.0" text="Пара" />
-                      <TableColumn prefWidth="109.0" text="Предмет" />
-                        <TableColumn prefWidth="75.0" text="Кабинет" />
-                        <TableColumn prefWidth="105.0" text="Преподаватель" />
+                      <TableColumn fx:id="lessonNumber" prefWidth="47.0" text="Пара" />
+                      <TableColumn fx:id="subject" prefWidth="114.0" text="Предмет" />
+                        <TableColumn fx:id="cabinet" prefWidth="82.0" text="Кабинет" />
+                        <TableColumn fx:id="teacher" prefWidth="131.0" text="Преподаватель" />
                     </columns>
                   </TableView>
               </items>

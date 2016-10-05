@@ -5,7 +5,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import ru.jeki.schedulenow.AlertBox;
-import ru.jeki.schedulenow.ApplicationCacheService;
+import ru.jeki.schedulenow.cache.ApplicationCacheService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -43,6 +43,10 @@ public class StartModel {
     public void wiringFieldWithCacheService(StringProperty groupName, StringProperty subgroup) {
         cacheService.wire("group_name", groupName);
         cacheService.wire("subgroup", subgroup);
+    }
+
+    public URL getDepartmentSchedule(String department) {
+        return scheduleLinkToItsType.get(department);
     }
 
     public void fillProperties() {

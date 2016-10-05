@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import ru.jeki.schedulenow.cache.ApplicationCacheService;
 
 import java.io.IOException;
 
@@ -23,9 +24,7 @@ public class ScheduleNow extends Application {
             primaryStage.setResizable(false);
             primaryStage.setFullScreen(false);
 
-            primaryStage.setOnCloseRequest(e -> {
-                ApplicationCacheService.getInstance().save();
-            });
+            primaryStage.setOnCloseRequest(e -> ApplicationCacheService.getInstance().save());
 
             primaryStage.show();
 

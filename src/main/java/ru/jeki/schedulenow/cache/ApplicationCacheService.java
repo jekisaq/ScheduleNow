@@ -1,6 +1,7 @@
-package ru.jeki.schedulenow;
+package ru.jeki.schedulenow.cache;
 
 import javafx.beans.property.StringProperty;
+import ru.jeki.schedulenow.AlertBox;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -67,7 +68,7 @@ public class ApplicationCacheService {
         }
     }
 
-    void save() {
+    public void save() {
         try (FileOutputStream cacheFileOutputStream = new FileOutputStream(CACHE_FILE)) {
             fieldValues.store(cacheFileOutputStream, "");
         } catch (Exception e) {
