@@ -2,9 +2,9 @@ package ru.jeki.schedulenow.parsers;
 
 import ru.jeki.schedulenow.structures.ScheduleDay;
 
-import java.util.List;
+import java.util.Set;
 
-interface Parser<T> {
+interface Parser {
     void parse();
-    List<ScheduleDay> getParsedData();
+    Set<ScheduleDay> getParsedData();
 }

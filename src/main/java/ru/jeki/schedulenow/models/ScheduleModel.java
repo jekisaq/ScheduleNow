@@ -8,9 +8,7 @@ import ru.jeki.schedulenow.structures.Lesson;
 import ru.jeki.schedulenow.structures.User;
 
 import java.io.IOException;
-import java.time.format.TextStyle;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class ScheduleModel {
@@ -43,7 +41,11 @@ public class ScheduleModel {
     public List<String> getReplacementDays() {
         return replacementsParser.getParsedData()
                 .stream()
-                .map(scheduleDay -> scheduleDay.getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("ru")))
+                .map(scheduleDay -> makeFirstSymbolInUpperCase(scheduleDay.getDayOfWeekName()))
                 .collect(Collectors.toList());
+    }
+
+    private String makeFirstSymbolInUpperCase(String source) {
+        return source.substring(0, 1).toUpperCase() + source.substring(1);
     }
 }
