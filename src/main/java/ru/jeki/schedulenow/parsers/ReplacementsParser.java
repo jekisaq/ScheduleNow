@@ -46,7 +46,12 @@ public class ReplacementsParser implements Parser {
             if (isLessonReplacementRow(filteredReplacementRows)) {
                 String group = filteredReplacementRows.get(0).text().trim();
                 int lessonNumber = Integer.valueOf(filteredReplacementRows.get(1).text());
-                int subgroup = Integer.getInteger(filteredReplacementRows.get(2).text(), 0);
+
+                int subgroup = 0;
+                try {
+                    subgroup = Integer.parseInt(filteredReplacementRows.get(2).text());
+                } catch (NumberFormatException e) {}
+
                 String subject = filteredReplacementRows.get(4).text().trim();
                 String teacher = filteredReplacementRows.get(5).text().trim();
                 String cabinet  = filteredReplacementRows.get(6).text().trim();

@@ -23,7 +23,6 @@ public class ScheduleModel {
     }
 
     public void buildSchedule() throws IOException {
-        // TODO make building schedule
         System.out.println("ScheduleModel: Building schedule");
         try {
             parseReplacements();
@@ -36,11 +35,11 @@ public class ScheduleModel {
     }
 
     private void filterReplacementsOnGroupAndSubgroup() {
-        for(Map.Entry<ScheduleDay, ObservableList<Lesson>> lessonsOfDayEntry : lessonsPerScheduleDay.entrySet()) {
+        for (Map.Entry<ScheduleDay, ObservableList<Lesson>> lessonsOfDayEntry : lessonsPerScheduleDay.entrySet()) {
             ObservableList<Lesson> filteredLessons = lessonsOfDayEntry.getValue()
                     .stream()
                     .filter(lesson -> lesson.getGroupName().equalsIgnoreCase(user.getGroupName()))
-                    .filter(lesson -> lesson.getSubgroup() <= 0 || lesson.getSubgroup() == user.getSubgroup())
+                    .filter(lesson -> lesson.getSubgroup() == 0 || lesson.getSubgroup() == user.getSubgroup())
                     .collect(Collectors.toCollection(FXCollections::observableArrayList));
             lessonsOfDayEntry.setValue(filteredLessons);
         }
