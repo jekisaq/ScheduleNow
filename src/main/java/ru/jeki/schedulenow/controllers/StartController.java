@@ -89,7 +89,7 @@ public class StartController implements Initializable {
     }
 
     private User getConstructedUser() {
-        return new User(groupNameField.getText(), subgroupField.getText(), model.getDepartmentSchedule(departmentMenu.getValue()));
+        return new User(groupNameField.getText(), Integer.valueOf(subgroupField.getText()), model.getDepartmentSchedule(departmentMenu.getValue()));
     }
 
 }

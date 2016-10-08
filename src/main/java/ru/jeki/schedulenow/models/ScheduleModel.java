@@ -1,5 +1,6 @@
 package ru.jeki.schedulenow.models;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import ru.jeki.schedulenow.AlertBox;
 import ru.jeki.schedulenow.parsers.ReplacementsParser;
@@ -26,9 +27,22 @@ public class ScheduleModel {
         System.out.println("ScheduleModel: Building schedule");
         try {
             parseReplacements();
+
+            filterReplacementsOnGroupAndSubgroup();
         } catch (IOException e) {
             AlertBox.display("Schedule now", "Ошибка загрузки расписания");
             throw new IOException(e);
+        }
+    }
+
+    private void filterReplacementsOnGroupAndSubgroup() {
+        for(Map.Entry<ScheduleDay, ObservableList<Lesson>> lessonsOfDayEntry : lessonsPerScheduleDay.entrySet()) {
+            ObservableList<Lesson> filteredLessons = lessonsOfDayEntry.getValue()
+                    .stream()
+                    .filter(lesson -> lesson.getGroupName().equalsIgnoreCase(user.getGroupName()))
+                    .filter(lesson -> lesson.getSubgroup() <= 0 || lesson.getSubgroup() == user.getSubgroup())
+                    .collect(Collectors.toCollection(FXCollections::observableArrayList));
+            lessonsOfDayEntry.setValue(filteredLessons);
         }
     }
 

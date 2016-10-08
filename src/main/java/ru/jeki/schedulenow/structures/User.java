@@ -5,10 +5,10 @@ import java.net.URL;
 public class User {
 
     private String groupName;
-    private String subgroup;
+    private int subgroup;
     private URL linkToDepartmentSchedule;
 
-    public User(String groupName, String subgroup, URL linkToDepartmentSchedule) {
+    public User(String groupName, int subgroup, URL linkToDepartmentSchedule) {
         this.groupName = groupName;
         this.subgroup = subgroup;
         this.linkToDepartmentSchedule = linkToDepartmentSchedule;
@@ -19,7 +19,7 @@ public class User {
     }
 
 
-    public String getSubgroup() {
+    public int getSubgroup() {
         return subgroup;
     }
 
