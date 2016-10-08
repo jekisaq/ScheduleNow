@@ -1,20 +1,21 @@
 package ru.jeki.schedulenow.models;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import ru.jeki.schedulenow.AlertBox;
 import ru.jeki.schedulenow.parsers.ReplacementsParser;
 import ru.jeki.schedulenow.structures.Lesson;
+import ru.jeki.schedulenow.structures.ScheduleDay;
 import ru.jeki.schedulenow.structures.User;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ScheduleModel {
     private final User user;
-    private ObservableList<Lesson> scheduleLessons = FXCollections.observableArrayList();
-    private ReplacementsParser replacementsParser;
+    private Map<ScheduleDay, ObservableList<Lesson>> lessonsPerScheduleDay;
 
     public ScheduleModel(User user) {
         this.user = user;
@@ -24,22 +25,36 @@ public class ScheduleModel {
         // TODO make building schedule
         System.out.println("ScheduleModel: Building schedule");
         try {
-            replacementsParser = new ReplacementsParser(user);
-            replacementsParser.parse();
+            parseReplacements();
         } catch (IOException e) {
             AlertBox.display("Schedule now", "Ошибка загрузки расписания");
             throw new IOException(e);
         }
-
     }
 
-    public ObservableList<Lesson> getScheduleLessons() {
-        return scheduleLessons;
+    private void parseReplacements() throws IOException {
+        ReplacementsParser replacementsParser = new ReplacementsParser();
+        replacementsParser.parse();
+        lessonsPerScheduleDay = replacementsParser.getLessonsPerScheduleDay();
+    }
+
+    public ObservableList<Lesson> getScheduleLessons(String scheduleDayName) {
+        Optional<ScheduleDay> key = getKeyByScheduleDayName(scheduleDayName);
+
+        return lessonsPerScheduleDay.get(
+                key.orElseThrow(() -> new IllegalArgumentException("There's no lessons by this day")));
+    }
+
+    private Optional<ScheduleDay> getKeyByScheduleDayName(String scheduleDayName) {
+        return lessonsPerScheduleDay.keySet()
+                .stream()
+                .filter(scheduleDay -> scheduleDay.getDayOfWeekName().equalsIgnoreCase(scheduleDayName))
+                .findAny();
     }
 
 
     public List<String> getReplacementDays() {
-        return replacementsParser.getParsedData()
+        return lessonsPerScheduleDay.keySet()
                 .stream()
                 .map(scheduleDay -> makeFirstSymbolInUpperCase(scheduleDay.getDayOfWeekName()))
                 .collect(Collectors.toList());

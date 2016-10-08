@@ -11,6 +11,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import ru.jeki.schedulenow.AlertBox;
 import ru.jeki.schedulenow.models.StartModel;
 import ru.jeki.schedulenow.structures.User;
 
@@ -46,7 +47,7 @@ public class StartController implements Initializable {
     }
 
 
-    public void onShowScheduleRequest(ActionEvent e) {
+    public void onShowScheduleRequest(ActionEvent event) {
         scheduleLoadIndicator.setVisible(true);
         departmentMenu.setDisable(false);
         groupNameField.setEditable(false);
@@ -70,14 +71,20 @@ public class StartController implements Initializable {
             Stage scheduleStage = new Stage();
             scheduleStage.setScene(new Scene(root));
             scheduleStage.show();
-        } catch (IOException e1) {
+        } catch (IOException e) {
             System.out.println("Scene schedule cannot be opened, showed and so on...");
             System.out.println();
 
-            e1.printStackTrace();
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            AlertBox.display("Schedule now", "Произошла ошибка. \nВозможно отсутствует шапка в заменах.");
+            System.out.println("There's no header in replacements");
+            System.out.println();
+
+            e.printStackTrace();
         }
 
-        Stage currentStage = (Stage)((Node)e.getSource()).getScene().getWindow();
+        Stage currentStage = (Stage)((Node)event.getSource()).getScene().getWindow();
         currentStage.close();
     }
 

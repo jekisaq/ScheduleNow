@@ -40,11 +40,11 @@ public class ScheduleController implements Initializable {
         cabinet.setCellValueFactory(new PropertyValueFactory<>("cabinet"));
         teacher.setCellValueFactory(new PropertyValueFactory<>("teacher"));
 
-        scheduleTable.getItems().addAll(model.getScheduleLessons());
         daysListView.getItems().addAll(model.getReplacementDays());
     }
 
     @FXML private void onDayOfWeekChosen(Event event) {
-        System.out.println("DayOfWeek has been chose");
+        String selectedDayName = daysListView.getSelectionModel().getSelectedItem();
+        scheduleTable.getItems().setAll(model.getScheduleLessons(selectedDayName));
     }
 }

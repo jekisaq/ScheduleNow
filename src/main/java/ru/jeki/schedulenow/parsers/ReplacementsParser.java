@@ -1,7 +1,8 @@
 package ru.jeki.schedulenow.parsers;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -9,22 +10,17 @@ import org.jsoup.select.Elements;
 import ru.jeki.schedulenow.structures.Lesson;
 import ru.jeki.schedulenow.structures.ScheduleDay;
 import ru.jeki.schedulenow.structures.ScheduleDayType;
-import ru.jeki.schedulenow.structures.User;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class ReplacementsParser implements Parser {
 
     private final Document rawReplacements;
-    private final User user;
-    private Map<ScheduleDay, List<Lesson>> lessonsPerScheduleDay = Maps.newLinkedHashMap();
+    private Map<ScheduleDay, ObservableList<Lesson>> lessonsPerScheduleDay = Maps.newLinkedHashMap();
 
-    public ReplacementsParser(User user) throws IOException {
+    public ReplacementsParser() throws IOException {
         this.rawReplacements = Jsoup.connect("http://ntgmk.ru/view_zamen.php").get();
-        this.user = user;
     }
 
     @Override
@@ -42,13 +38,35 @@ public class ReplacementsParser implements Parser {
                         parseDayOfWeekName(dayHeader)
                 );
 
-                lessonsPerScheduleDay.put(currentProcessingScheduleDay, Lists.newArrayList());
+                lessonsPerScheduleDay.put(currentProcessingScheduleDay, FXCollections.observableArrayList());
                 continue;
             }
 
+            Elements filteredReplacementRows = replacementsRow.select("td[height=12]");
+            if (isLessonReplacementRow(filteredReplacementRows)) {
+                String group = filteredReplacementRows.get(0).text().trim();
+                int lessonNumber = Integer.valueOf(filteredReplacementRows.get(1).text());
+                int subgroup = Integer.getInteger(filteredReplacementRows.get(2).text(), 0);
+                String subject = filteredReplacementRows.get(4).text().trim();
+                String teacher = filteredReplacementRows.get(5).text().trim();
+                String cabinet  = filteredReplacementRows.get(6).text().trim();
 
+                Lesson lesson = new Lesson(lessonNumber, group, subgroup, subject, cabinet, teacher,
+                        currentProcessingScheduleDay);
+                if (lessonsPerScheduleDay.containsKey(currentProcessingScheduleDay)) {
+                    lessonsPerScheduleDay.get(currentProcessingScheduleDay).add(lesson);
+                } else {
+                    throw new IllegalStateException("There's no current parsing schedule day in raw document.");
+                }
+            }
         }
 
+
+
+    }
+
+    private boolean isLessonReplacementRow(Elements filteredReplacementRows) {
+        return filteredReplacementRows.size() == 7;
     }
 
     private boolean isCurrentScheduleDayTheSameInRow(String headerRow, ScheduleDay scheduleDay) {
@@ -69,8 +87,7 @@ public class ReplacementsParser implements Parser {
         return ScheduleDayType.of(dayHeader.split("\\s+")[3]);
     }
 
-    @Override
-    public Set<ScheduleDay> getParsedData() {
-        return lessonsPerScheduleDay.keySet();
+    public Map<ScheduleDay,ObservableList<Lesson>> getLessonsPerScheduleDay() {
+        return lessonsPerScheduleDay;
     }
 }
