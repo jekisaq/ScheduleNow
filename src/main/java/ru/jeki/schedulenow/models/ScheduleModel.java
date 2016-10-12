@@ -2,6 +2,9 @@ package ru.jeki.schedulenow.models;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import ru.jeki.schedulenow.AlertBox;
 import ru.jeki.schedulenow.parsers.ReplacementsParser;
 import ru.jeki.schedulenow.structures.Lesson;
@@ -22,7 +25,7 @@ public class ScheduleModel {
         this.user = user;
     }
 
-    public void buildSchedule() throws IOException {
+    public void buildSchedule() {
         System.out.println("ScheduleModel: Building schedule");
         try {
             parseReplacements();
@@ -30,7 +33,7 @@ public class ScheduleModel {
             filterReplacementsOnGroupAndSubgroup();
         } catch (IOException e) {
             AlertBox.display("Schedule now", "Ошибка загрузки расписания");
-            throw new IOException(e);
+            e.printStackTrace();
         }
     }
 
@@ -46,9 +49,14 @@ public class ScheduleModel {
     }
 
     private void parseReplacements() throws IOException {
-        ReplacementsParser replacementsParser = new ReplacementsParser();
+        ReplacementsParser replacementsParser = new ReplacementsParser(getLoadedDocument());
         replacementsParser.parse();
         lessonsPerScheduleDay = replacementsParser.getLessonsPerScheduleDay();
+    }
+
+    private Document getLoadedDocument() throws IOException {
+        Connection connection = Jsoup.connect("http://ntgmk.ru/view_zamen.php");
+        return connection.get();
     }
 
     public ObservableList<Lesson> getScheduleLessons(String scheduleDayName) {

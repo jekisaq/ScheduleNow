@@ -11,7 +11,6 @@ import ru.jeki.schedulenow.models.ScheduleModel;
 import ru.jeki.schedulenow.structures.Lesson;
 import ru.jeki.schedulenow.structures.User;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -28,7 +27,7 @@ public class ScheduleController implements Initializable {
 
     @FXML private ListView<String> daysListView;
 
-    public ScheduleController(User user) throws IOException {
+    public ScheduleController(User user) {
         this.model = new ScheduleModel(user);
         model.buildSchedule();
     }

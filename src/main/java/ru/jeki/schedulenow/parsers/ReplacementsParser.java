@@ -3,7 +3,6 @@ package ru.jeki.schedulenow.parsers;
 import com.google.common.collect.Maps;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -11,22 +10,21 @@ import ru.jeki.schedulenow.structures.Lesson;
 import ru.jeki.schedulenow.structures.ScheduleDay;
 import ru.jeki.schedulenow.structures.ScheduleDayType;
 
-import java.io.IOException;
 import java.util.Map;
 
 public class ReplacementsParser implements Parser {
 
-    private final Document rawReplacements;
+    private final Document rawHtmlDocument;
     private Map<ScheduleDay, ObservableList<Lesson>> lessonsPerScheduleDay = Maps.newLinkedHashMap();
 
-    public ReplacementsParser() throws IOException {
-        this.rawReplacements = Jsoup.connect("http://ntgmk.ru/view_zamen.php").get();
+    public ReplacementsParser(Document document) {
+        this.rawHtmlDocument = document;
     }
 
     @Override
     public void parse() {
         ScheduleDay currentProcessingScheduleDay = null;
-        Elements replacementsRows = rawReplacements.select("table tbody tr");
+        Elements replacementsRows = rawHtmlDocument.select("table tbody tr");
 
         for (Element replacementsRow : replacementsRows) {
             Elements dayHeaderTd = replacementsRow.select("td[colspan=7]");
