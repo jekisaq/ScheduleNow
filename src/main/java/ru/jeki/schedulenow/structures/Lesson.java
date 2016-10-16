@@ -7,16 +7,14 @@ public class Lesson {
     private String subject;
     private String cabinet;
     private String teacher;
-    private ScheduleDay day;
 
-    public Lesson(int number, String groupName, int subgroup, String subject, String cabinet, String teacher, ScheduleDay day) {
+    public Lesson(int number, String groupName, int subgroup, String subject, String cabinet, String teacher) {
         this.number = number;
         this.groupName = groupName;
         this.subgroup = subgroup;
         this.subject = subject;
         this.cabinet = cabinet;
         this.teacher = teacher;
-        this.day = day;
     }
 
     public int getNumber() {
@@ -35,9 +33,6 @@ public class Lesson {
         return teacher;
     }
 
-    public ScheduleDay getDay() {
-        return day;
-    }
 
     public String getGroupName() {
         return groupName;

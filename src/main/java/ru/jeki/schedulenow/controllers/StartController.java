@@ -54,17 +54,7 @@ public class StartController implements Initializable {
         subgroupField.setEditable(false);
 
         FXMLLoader loader = new FXMLLoader();
-        loader.setControllerFactory(type -> {
-            try {
-                return new ScheduleController(getConstructedUser());
-            } catch (IOException e1) {
-                System.out.println("Controller of schedule has troubles...");
-                System.out.println();
-
-                e1.printStackTrace();
-            }
-            return null;
-        });
+        loader.setControllerFactory(type -> new ScheduleController(getConstructedUser()));
 
         try {
             Parent root = loader.load(getClass().getResourceAsStream("/fxml/schedule.fxml"));

@@ -1,7 +1,5 @@
 package ru.jeki.schedulenow.models;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,13 +11,11 @@ import ru.jeki.schedulenow.structures.User;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ScheduleModel {
     private final User user;
-    private Map<ScheduleDay, ObservableList<Lesson>> lessonsPerScheduleDay;
+    private List<ScheduleDay> scheduleDays;
 
     public ScheduleModel(User user) {
         this.user = user;
@@ -38,20 +34,21 @@ public class ScheduleModel {
     }
 
     private void filterReplacementsOnGroupAndSubgroup() {
-        for (Map.Entry<ScheduleDay, ObservableList<Lesson>> lessonsOfDayEntry : lessonsPerScheduleDay.entrySet()) {
-            ObservableList<Lesson> filteredLessons = lessonsOfDayEntry.getValue()
+        List<Lesson> filteredLessons;
+        for (ScheduleDay scheduleDay : scheduleDays) {
+            filteredLessons = scheduleDay.lessons()
                     .stream()
                     .filter(lesson -> lesson.getGroupName().equalsIgnoreCase(user.getGroupName()))
                     .filter(lesson -> lesson.getSubgroup() == 0 || lesson.getSubgroup() == user.getSubgroup())
-                    .collect(Collectors.toCollection(FXCollections::observableArrayList));
-            lessonsOfDayEntry.setValue(filteredLessons);
+                    .collect(Collectors.toList());
+            scheduleDay.lessons().clear();
+            scheduleDay.lessons().addAll(filteredLessons);
         }
     }
 
     private void parseReplacements() throws IOException {
         ReplacementsParser replacementsParser = new ReplacementsParser(getLoadedDocument());
-        replacementsParser.parse();
-        lessonsPerScheduleDay = replacementsParser.getLessonsPerScheduleDay();
+        scheduleDays = replacementsParser.parse();
     }
 
     private Document getLoadedDocument() throws IOException {
@@ -59,23 +56,15 @@ public class ScheduleModel {
         return connection.get();
     }
 
-    public ObservableList<Lesson> getScheduleLessons(String scheduleDayName) {
-        Optional<ScheduleDay> key = getKeyByScheduleDayName(scheduleDayName);
-
-        return lessonsPerScheduleDay.get(
-                key.orElseThrow(() -> new IllegalArgumentException("There's no lessons by this day")));
-    }
-
-    private Optional<ScheduleDay> getKeyByScheduleDayName(String scheduleDayName) {
-        return lessonsPerScheduleDay.keySet()
-                .stream()
+    public List<Lesson> getScheduleLessons(String scheduleDayName) {
+        return scheduleDays.stream()
                 .filter(scheduleDay -> scheduleDay.getDayOfWeekName().equalsIgnoreCase(scheduleDayName))
-                .findAny();
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("There's no lessons by this day"))
+                .lessons();
     }
-
 
     public List<String> getReplacementDays() {
-        return lessonsPerScheduleDay.keySet()
+        return scheduleDays
                 .stream()
                 .map(scheduleDay -> makeFirstSymbolInUpperCase(scheduleDay.getDayOfWeekName()))
                 .collect(Collectors.toList());

@@ -27,7 +27,7 @@ public class ScheduleController implements Initializable {
 
     @FXML private ListView<String> daysListView;
 
-    public ScheduleController(User user) {
+    ScheduleController(User user) {
         this.model = new ScheduleModel(user);
         model.buildSchedule();
     }
