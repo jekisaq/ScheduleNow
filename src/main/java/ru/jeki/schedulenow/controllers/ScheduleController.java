@@ -39,7 +39,7 @@ public class ScheduleController implements Initializable {
         cabinet.setCellValueFactory(new PropertyValueFactory<>("cabinet"));
         teacher.setCellValueFactory(new PropertyValueFactory<>("teacher"));
 
-        daysListView.getItems().addAll(model.getReplacementDays());
+        daysListView.getItems().addAll(model.getReplacementDayNames());
     }
 
     @FXML private void onDayOfWeekChosen(Event event) {

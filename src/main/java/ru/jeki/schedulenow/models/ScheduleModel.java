@@ -63,7 +63,7 @@ public class ScheduleModel {
                 .lessons();
     }
 
-    public List<String> getReplacementDays() {
+    public List<String> getReplacementDayNames() {
         return scheduleDays
                 .stream()
                 .map(scheduleDay -> makeFirstSymbolInUpperCase(scheduleDay.getDayOfWeekName()))
