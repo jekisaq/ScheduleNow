@@ -4,7 +4,6 @@ import javafx.beans.property.StringProperty;
 import ru.jeki.schedulenow.AlertBox;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,7 +20,7 @@ public class ApplicationCacheService {
         return instance;
     }
 
-    private final File CACHE_FILE = new File(getCacheFilePath());
+    private final File CACHE_FILE = Paths.get("cache", "fields.properties").toAbsolutePath().toFile();
 
     private Properties fieldValues = new Properties();
     private Map<String, StringProperty> keyToProperty = new LinkedHashMap<>();
@@ -43,6 +42,7 @@ public class ApplicationCacheService {
     private void initializeProperties() {
         fieldValues.setProperty("group_name", "");
         fieldValues.setProperty("subgroup", "");
+        fieldValues.setProperty("department_name", "");
     }
 
     private void createFileIfDoesntExist() {
@@ -74,19 +74,6 @@ public class ApplicationCacheService {
         } catch (Exception e) {
             AlertBox.display("Schedule Now", "Ошибка: Данные в форме не сохранены.");
         }
-    }
-
-    private String getCacheFilePath() {
-        String cacheFilePath = "";
-
-        try {
-            cacheFilePath = Paths.get(getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).toString() +
-                    "/cache/fields.properties";
-        } catch (URISyntaxException e) {
-            System.out.println("Cache file path cannot be got.");
-        }
-
-        return cacheFilePath;
     }
 
     public void wire(String key, StringProperty valueProperty) {

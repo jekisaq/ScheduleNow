@@ -59,6 +59,11 @@ public class StartController implements Initializable {
         try {
             Parent root = loader.load(getClass().getResourceAsStream("/fxml/schedule.fxml"));
             Stage scheduleStage = new Stage();
+
+            scheduleStage.setResizable(false);
+            scheduleStage.setFullScreen(false);
+            scheduleStage.setTitle("Schedule Now - узнай расписание");
+
             scheduleStage.setScene(new Scene(root));
             scheduleStage.show();
         } catch (IOException e) {
