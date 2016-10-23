@@ -1,5 +1,7 @@
 package ru.jeki.schedulenow.controllers;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -32,11 +34,41 @@ public class StartController implements Initializable {
         model.loadDepartments();
         addDepartmentsToForm();
 
-        model.wiringFieldWithCacheService(groupNameField.textProperty(), subgroupField.textProperty());
+        wireFieldsWithCacheService();
         model.fillProperties();
     }
 
+    private void wireFieldsWithCacheService() {
+        StringProperty departmentMenuProperty = getBuiltDepartmentMenuProperty();
 
+        model.wireFieldsWithCacheService(
+                        groupNameField.textProperty(),
+                        subgroupField.textProperty(),
+                        departmentMenuProperty);
+    }
+
+    private StringProperty getBuiltDepartmentMenuProperty() {
+        StringProperty departmentMenuProperty = new SimpleStringProperty(
+                departmentMenu, "text",
+                String.valueOf(departmentMenu.getSelectionModel().getSelectedIndex()));
+
+        departmentMenuProperty.addListener((observable, oldValue, newValue) -> {
+            int index;
+
+            try {
+                index = Integer.parseInt(newValue);
+            } catch (NumberFormatException e) {
+                index = 0;
+            }
+
+            departmentMenu.getSelectionModel().select(index);
+        });
+
+        departmentMenu.getSelectionModel().selectedIndexProperty()
+                .addListener((observable, oldValue, newValue) -> departmentMenuProperty.setValue(String.valueOf(newValue.intValue())));
+
+        return departmentMenuProperty;
+    }
 
     private void addDepartmentsToForm() {
         departmentMenu.getItems().addAll(
@@ -53,19 +85,15 @@ public class StartController implements Initializable {
         groupNameField.setEditable(false);
         subgroupField.setEditable(false);
 
-        FXMLLoader loader = new FXMLLoader();
-        loader.setControllerFactory(type -> new ScheduleController(getConstructedUser()));
+        openScheduleWindow();
 
+        Stage currentStage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        currentStage.close();
+    }
+
+    private void openScheduleWindow() {
         try {
-            Parent root = loader.load(getClass().getResourceAsStream("/fxml/schedule.fxml"));
-            Stage scheduleStage = new Stage();
-
-            scheduleStage.setResizable(false);
-            scheduleStage.setFullScreen(false);
-            scheduleStage.setTitle("Schedule Now - узнай расписание");
-
-            scheduleStage.setScene(new Scene(root));
-            scheduleStage.show();
+            tryToOpenScheduleWindow();
         } catch (IOException e) {
             System.out.println("Scene schedule cannot be opened, showed and so on...");
             System.out.println();
@@ -78,9 +106,20 @@ public class StartController implements Initializable {
 
             e.printStackTrace();
         }
+    }
 
-        Stage currentStage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        currentStage.close();
+    private void tryToOpenScheduleWindow() throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setControllerFactory(type -> new ScheduleController(getConstructedUser()));
+        Parent root = loader.load(getClass().getResourceAsStream("/fxml/schedule.fxml"));
+        Stage scheduleStage = new Stage();
+
+        scheduleStage.setResizable(false);
+        scheduleStage.setFullScreen(false);
+        scheduleStage.setTitle("Schedule Now - узнай расписание");
+
+        scheduleStage.setScene(new Scene(root));
+        scheduleStage.show();
     }
 
     private User getConstructedUser() {

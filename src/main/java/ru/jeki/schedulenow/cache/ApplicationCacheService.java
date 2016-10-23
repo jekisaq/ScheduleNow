@@ -23,11 +23,9 @@ public class ApplicationCacheService {
     private final File CACHE_FILE = Paths.get("cache", "fields.properties").toAbsolutePath().toFile();
 
     private Properties fieldValues = new Properties();
-    private Map<String, StringProperty> keyToProperty = new LinkedHashMap<>();
+    private Map<String, StringProperty> idToFormElementPropertyMap = new LinkedHashMap<>();
 
     private ApplicationCacheService() {
-        initializeProperties();
-
         createFileIfDoesntExist();
 
         try (InputStream cacheFileInputStream = new FileInputStream(CACHE_FILE)) {
@@ -37,12 +35,6 @@ public class ApplicationCacheService {
             System.out.println();
             e.printStackTrace();
         }
-    }
-
-    private void initializeProperties() {
-        fieldValues.setProperty("group_name", "");
-        fieldValues.setProperty("subgroup", "");
-        fieldValues.setProperty("department_name", "");
     }
 
     private void createFileIfDoesntExist() {
@@ -63,7 +55,7 @@ public class ApplicationCacheService {
     }
 
     public void loadPropertiesValues() {
-        for (Map.Entry<String, StringProperty> pair : keyToProperty.entrySet()) {
+        for (Map.Entry<String, StringProperty> pair : idToFormElementPropertyMap.entrySet()) {
             pair.getValue().setValue(fieldValues.getProperty(pair.getKey(), ""));
         }
     }
@@ -76,9 +68,9 @@ public class ApplicationCacheService {
         }
     }
 
-    public void wire(String key, StringProperty valueProperty) {
-        valueProperty.addListener((observable, oldValue, newValue) -> fieldValues.setProperty(key, newValue));
+    public void wire(String formElementId, StringProperty valueProperty) {
+        valueProperty.addListener((observable, oldValue, newValue) -> fieldValues.setProperty(formElementId, newValue));
 
-        keyToProperty.put(key, valueProperty);
+        idToFormElementPropertyMap.put(formElementId, valueProperty);
     }
 }

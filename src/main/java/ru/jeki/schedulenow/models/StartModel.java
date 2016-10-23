@@ -1,6 +1,7 @@
 package ru.jeki.schedulenow.models;
 
 import javafx.beans.property.StringProperty;
+import javafx.scene.control.Control;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class StartModel {
     private static final String SITE = "http://ntgmk.ru/";
@@ -40,9 +42,9 @@ public class StartModel {
         }
     }
 
-    public void wiringFieldWithCacheService(StringProperty groupName, StringProperty subgroup) {
-        cacheService.wire("group_name", groupName);
-        cacheService.wire("subgroup", subgroup);
+    public void wireFieldsWithCacheService(StringProperty... fields) {
+        Stream.of(fields).forEachOrdered(
+                stringProperty -> cacheService.wire(((Control)stringProperty.getBean()).getId(), stringProperty));
     }
 
     public URL getDepartmentSchedule(String department) {
