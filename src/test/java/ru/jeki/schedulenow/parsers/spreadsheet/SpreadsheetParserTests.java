@@ -19,7 +19,6 @@ import static org.junit.Assert.assertEquals;
 public class SpreadsheetParserTests {
 
     private Workbook workbook;
-    private User user = new User("681", 1, null);
 
     @Before
     public void setUp() throws IOException {
@@ -28,7 +27,8 @@ public class SpreadsheetParserTests {
     }
 
     @Test
-    public void mondaySpecifiedLessons() {
+    public void mondaySpecifiedLessonsFor681Group() {
+        User user = new User("681", 1, null);
         List<Lesson> expectedLessons = Lists.newArrayList();
         expectedLessons.add(new Lesson(1, user.getGroupName(), user.getSubgroup(),
                 "Рус.язык", "309-2", "Кайгородова"));
@@ -37,9 +37,31 @@ public class SpreadsheetParserTests {
         expectedLessons.add(new Lesson(3, user.getGroupName(), user.getSubgroup(),
                 "математика", "318-2", "Захарова"));
         expectedLessons.add(new Lesson(5, user.getGroupName(), user.getSubgroup(),
-                "Математика: алг, ", "", ""));
+                "Математика: алг,", "", ""));
 
-        ScheduleDay scheduleDay = new ScheduleDay(ScheduleDayType.Numerator, "понедельник");
+        testByTemplate(expectedLessons, user, "понедельник");
+    }
+
+    @Test
+    public void tuesdaySpecifiedLessonsFor571Group() {
+        User user = new User("571", 1, null);
+        List<Lesson> expectedLessons = Lists.newArrayList();
+        expectedLessons.add(new Lesson(1, user.getGroupName(), user.getSubgroup(),
+                "Материалов.", "18-", "Скоробогатова"));
+        expectedLessons.add(new Lesson(2, user.getGroupName(), user.getSubgroup(),
+                "БЖ", "21-1", "Смирнова"));
+        expectedLessons.add(new Lesson(3, user.getGroupName(), user.getSubgroup(),
+                "Осн.экономики орг", "402-2", "Емакаева"));
+
+        testByTemplate(expectedLessons, user, "вторник");
+    }
+
+    private void testByTemplate(List<Lesson> expectedLessons, User user, String dayOfWeek) {
+        testByTemplate(expectedLessons, user, dayOfWeek, ScheduleDayType.Numerator);
+    }
+
+    private void testByTemplate(List<Lesson> expectedLessons, User user, String dayOfWeekName, ScheduleDayType dayType) {
+        ScheduleDay scheduleDay = new ScheduleDay(dayType, dayOfWeekName);
         List<ScheduleDay> scheduleDays = Lists.newArrayList(
                 scheduleDay);
 
@@ -48,7 +70,7 @@ public class SpreadsheetParserTests {
 
         List<Lesson> parsedLessons = scheduleDay.lessons().list();
 
-        for (int i = 0; i <= 3; i++) {
+        for (int i = 0; i < expectedLessons.size(); i++) {
             Lesson expectedLesson = expectedLessons.get(i);
             Lesson parsedLesson = parsedLessons.get(i);
             assertEquals(expectedLesson, parsedLesson);

@@ -91,6 +91,9 @@ public class SpreadsheetParser {
                 cell.setCellValue("");
             }
 
+            String trimedCellValue = cell.getStringCellValue().trim();
+            cell.setCellValue(trimedCellValue);
+
             list.add(cell);
         }
 
@@ -120,6 +123,10 @@ public class SpreadsheetParser {
     }
 
     private boolean hasCellLessonName(Cell cell) {
+        return isCellTextBold(cell) && !cell.getStringCellValue().isEmpty();
+    }
+
+    private boolean isCellTextBold(Cell cell) {
         CellStyle cellStyle = cell.getCellStyle();
         short fontIndex = cellStyle.getFontIndex();
         Font font = workbook.getFontAt(fontIndex);

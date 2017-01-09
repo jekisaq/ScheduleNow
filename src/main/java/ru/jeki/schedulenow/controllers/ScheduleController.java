@@ -43,6 +43,7 @@ public class ScheduleController implements Initializable {
             AlertBox.display("Schedule Now - Ошибка", "Возникла ошибка: \n" + e.getLocalizedMessage());
             e.printStackTrace();
         }
+
         lessonNumber.setCellValueFactory(new PropertyValueFactory<>("number"));
         subject.setCellValueFactory(new PropertyValueFactory<>("subject"));
         cabinet.setCellValueFactory(new PropertyValueFactory<>("cabinet"));
