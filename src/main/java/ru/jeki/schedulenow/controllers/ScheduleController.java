@@ -24,10 +24,10 @@ public class ScheduleController implements Initializable {
 
     @FXML private TableView<Lesson> scheduleTable;
 
-    @FXML private TableColumn lessonNumber;
-    @FXML private TableColumn subject;
-    @FXML private TableColumn cabinet;
-    @FXML private TableColumn teacher;
+    @FXML private TableColumn<Lesson, Integer> lessonNumber;
+    @FXML private TableColumn<Lesson, String> subject;
+    @FXML private TableColumn<Lesson, String> cabinet;
+    @FXML private TableColumn<Lesson, String> teacher;
 
     @FXML private ListView<String> daysListView;
 
@@ -43,7 +43,7 @@ public class ScheduleController implements Initializable {
             AlertBox.display("Schedule Now - Ошибка", "Возникла ошибка: \n" + e.getLocalizedMessage());
             e.printStackTrace();
         }
-        lessonNumber.setCellValueFactory(new PropertyValueFactory<Lesson, Integer>("number"));
+        lessonNumber.setCellValueFactory(new PropertyValueFactory<>("number"));
         subject.setCellValueFactory(new PropertyValueFactory<>("subject"));
         cabinet.setCellValueFactory(new PropertyValueFactory<>("cabinet"));
         teacher.setCellValueFactory(new PropertyValueFactory<>("teacher"));
