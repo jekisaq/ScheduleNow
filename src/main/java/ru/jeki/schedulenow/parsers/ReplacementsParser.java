@@ -70,7 +70,7 @@ public class ReplacementsParser implements Parser {
                     hadSpace = false;
                 }
 
-                processingScheduleDay.lessons().add(parseLessonInstanceFrom(filteredReplacementColumns));
+                processingScheduleDay.lessons().list().add(parseLessonInstanceFrom(filteredReplacementColumns));
             } else if (hadSpace) {
                 continue;
             } else {

@@ -1,12 +1,13 @@
 package ru.jeki.schedulenow.models;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import ru.jeki.schedulenow.AlertBox;
 import ru.jeki.schedulenow.ExcelScheduleLoader;
-import ru.jeki.schedulenow.parsers.ExcelScheduleParser;
 import ru.jeki.schedulenow.parsers.ReplacementsParser;
+import ru.jeki.schedulenow.parsers.spreadsheet.SpreadsheetParser;
 import ru.jeki.schedulenow.structures.Lesson;
 import ru.jeki.schedulenow.structures.ScheduleDay;
 import ru.jeki.schedulenow.structures.User;
@@ -25,17 +26,12 @@ public class ScheduleModel {
         this.user = user;
     }
 
-    public void buildSchedule() {
+    public void buildSchedule() throws IOException {
         System.out.println("ScheduleModel: Building schedule");
-        try {
-            parseReplacements();
-            completeScheduleFromXls();
 
-            filterLessonsOnGroupAndSubgroup();
-        } catch (IOException e) {
-            AlertBox.display("Schedule now", "Ошибка загрузки расписания");
-            e.printStackTrace();
-        }
+        parseReplacements();
+        filterLessonsOnGroupAndSubgroup();
+        completeScheduleFromXls();
     }
 
     private void parseReplacements() throws IOException {
@@ -52,21 +48,26 @@ public class ScheduleModel {
         ExcelScheduleLoader excelScheduleLoader = new ExcelScheduleLoader(user.getLinkToDepartmentSchedule());
         Optional<InputStream> scheduleInputStreamOptional = excelScheduleLoader.loadInputStream();
         scheduleInputStreamOptional.ifPresent(inputStream -> {
-            ExcelScheduleParser excelScheduleParser = new ExcelScheduleParser(inputStream, scheduleDays);
-            excelScheduleParser.parse();
+            try {
+                Workbook workbook = new HSSFWorkbook(inputStream);
+                SpreadsheetParser spreadsheetParser = new SpreadsheetParser(workbook, user, scheduleDays);
+                spreadsheetParser.parse();
+            } catch (IOException e) {
+                throw new IllegalStateException("The main schedule xls file must be invalid.");
+            }
         });
     }
 
     private void filterLessonsOnGroupAndSubgroup() {
         List<Lesson> filteredLessons;
         for (ScheduleDay scheduleDay : scheduleDays) {
-            filteredLessons = scheduleDay.lessons()
+            filteredLessons = scheduleDay.lessons().list()
                     .stream()
                     .filter(lesson -> lesson.getGroupName().equalsIgnoreCase(user.getGroupName()))
                     .filter(lesson -> lesson.getSubgroup() == 0 || lesson.getSubgroup() == user.getSubgroup())
                     .collect(Collectors.toList());
-            scheduleDay.lessons().clear();
-            scheduleDay.lessons().addAll(filteredLessons);
+            scheduleDay.lessons().list().clear();
+            scheduleDay.lessons().list().addAll(filteredLessons);
         }
     }
 
@@ -74,7 +75,7 @@ public class ScheduleModel {
         return scheduleDays.stream()
                 .filter(scheduleDay -> scheduleDay.getDayOfWeekName().equalsIgnoreCase(scheduleDayName))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("There's no lessons by this day"))
-                .lessons();
+                .lessons().list();
     }
 
     public List<String> getReplacementDayNames() {

@@ -1,5 +1,7 @@
 package ru.jeki.schedulenow.structures;
 
+import java.util.Objects;
+
 public class Lesson {
     private int number;
     private String groupName;
@@ -40,5 +42,35 @@ public class Lesson {
 
     public int getSubgroup() {
         return subgroup;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Lesson lesson = (Lesson) o;
+        return number == lesson.number &&
+                subgroup == lesson.subgroup &&
+                Objects.equals(groupName, lesson.groupName) &&
+                Objects.equals(subject, lesson.subject) &&
+                Objects.equals(cabinet, lesson.cabinet) &&
+                Objects.equals(teacher, lesson.teacher);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(number, groupName, subgroup, subject, cabinet, teacher);
+    }
+
+    @Override
+    public String toString() {
+        return "Lesson{" +
+                "number=" + number +
+                ", groupName='" + groupName + '\'' +
+                ", subgroup=" + subgroup +
+                ", subject='" + subject + '\'' +
+                ", cabinet='" + cabinet + '\'' +
+                ", teacher='" + teacher + '\'' +
+                '}';
     }
 }
