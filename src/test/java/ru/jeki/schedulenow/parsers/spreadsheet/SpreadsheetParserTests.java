@@ -28,7 +28,7 @@ public class SpreadsheetParserTests {
     }
 
     @Test
-    public void mondaySpecifiedLesson() {
+    public void mondaySpecifiedLessons() {
         List<Lesson> expectedLessons = Lists.newArrayList();
         expectedLessons.add(new Lesson(1, user.getGroupName(), user.getSubgroup(),
                 "Рус.язык", "309-2", "Кайгородова"));
