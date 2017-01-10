@@ -56,6 +56,20 @@ public class SpreadsheetParserTests {
         testByTemplate(expectedLessons, user, "вторник");
     }
 
+    @Test
+    public void labWorkReadingTest() {
+        User user = new User("521", 2, null);
+        List<Lesson> expectedLessons = Lists.newArrayList();
+        expectedLessons.add(new Lesson(1, user.getGroupName(), user.getSubgroup(),
+                "информатика", "305-4", "Прокопьева"));
+        expectedLessons.add(new Lesson(2, user.getGroupName(), user.getSubgroup(),
+                "Устройство автомо", "204-4", "Поминова"));
+        expectedLessons.add(new Lesson(3, user.getGroupName(), user.getSubgroup(),
+                "Физ-ра", "", "Цыганенко"));
+
+        testByTemplate(expectedLessons, user, "вторник");
+    }
+
     private void testByTemplate(List<Lesson> expectedLessons, User user, String dayOfWeek) {
         testByTemplate(expectedLessons, user, dayOfWeek, ScheduleDayType.Numerator);
     }

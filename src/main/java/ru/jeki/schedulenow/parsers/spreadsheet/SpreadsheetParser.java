@@ -2,6 +2,7 @@ package ru.jeki.schedulenow.parsers.spreadsheet;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 import ru.jeki.schedulenow.parsers.spreadsheet.readers.DistributedLectureLessonCellReader;
 import ru.jeki.schedulenow.parsers.spreadsheet.readers.LabWorkLessonCellReader;
@@ -24,6 +25,8 @@ public class SpreadsheetParser {
     private static final int MAX_LESSONS_IN_DAY = 5;
     private static final int CELLS_FOR_A_LESSON = 4;
     private static final int GROUP_CELLS_OFFSET = 7;
+
+    private Logger logger = Logger.getLogger(getClass());
 
     private Sheet sheet;
     private Workbook workbook;
@@ -104,10 +107,16 @@ public class SpreadsheetParser {
         LessonCellsReader lessonCellsReader = new NormalLectureLessonCellsReader();
 
         if (isLessonDistributedLecture(lessonCells)) {
+            logger.debug("Reading lesson selected as distributed lecture");
             lessonCellsReader = new DistributedLectureLessonCellReader(scheduleDayType);
         } else if (isLessonLabWork(lessonCells)) {
+            logger.debug("Reading lesson selected as lab work");
             lessonCellsReader = new LabWorkLessonCellReader(user);
+        } else {
+            logger.debug("Reading lesson selected as normal lecture");
         }
+
+        logger.debug(lessonCells);
 
         lessonCellsReader.read(lessonCells);
 
@@ -141,14 +150,10 @@ public class SpreadsheetParser {
     }
 
     private boolean isCellTeacherDescription(Cell cell) {
-        if (cell.getCellTypeEnum() != CellType.STRING) {
-            throw new IllegalStateException("Internal error in spreadsheet - Parsing cell must contain String.");
-        }
-
         String lectureDescription = cell.getStringCellValue();
-        Pattern descriptionPattern = Pattern.compile("^\\w+\\s");
+        Pattern descriptionPattern = Pattern.compile("^\\p{IsCyrillic}+(\\s\\d{1,3}-\\d?)?$");
         Matcher matcher = descriptionPattern.matcher(lectureDescription);
-        return matcher.find();
+        return matcher.find() && !isCellTextBold(cell);
     }
 
 
