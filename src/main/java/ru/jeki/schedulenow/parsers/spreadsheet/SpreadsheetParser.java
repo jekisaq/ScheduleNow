@@ -94,8 +94,8 @@ public class SpreadsheetParser {
                 cell.setCellValue("");
             }
 
-            String trimedCellValue = cell.getStringCellValue().trim();
-            cell.setCellValue(trimedCellValue);
+            String trimmedCellValue = cell.getStringCellValue().trim();
+            cell.setCellValue(trimmedCellValue);
 
             list.add(cell);
         }
