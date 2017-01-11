@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import ru.jeki.schedulenow.cache.ApplicationCacheService;
 import ru.jeki.schedulenow.controllers.StartController;
@@ -37,6 +38,8 @@ public class ScheduleNow extends Application {
             primaryStage.setResizable(false);
             primaryStage.setFullScreen(false);
             primaryStage.setOnHidden(e -> ApplicationCacheService.getInstance().save());
+            Image image = new Image("icon32.png");
+            primaryStage.getIcons().add(image);
 
             primaryStage.show();
 

@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ru.jeki.schedulenow.AlertBox;
 import ru.jeki.schedulenow.models.StartModel;
@@ -31,17 +32,24 @@ public class StartController implements Initializable {
     @FXML private TextField subgroupField;
     @FXML private ChoiceBox<String> departmentMenu;
     @FXML private ProgressIndicator scheduleLoadIndicator;
+    @FXML private Text versionContainer;
 
     public StartController(Properties configuration) {
         this.configuration = configuration;
     }
 
     public void initialize(URL location, ResourceBundle resources) {
+        addVersionToForm();
+
         model.loadDepartments();
         addDepartmentsToForm();
 
         wireFieldsWithCacheService();
         model.fillProperties();
+    }
+
+    private void addVersionToForm() {
+        versionContainer.setText(configuration.getProperty("scheduleNow.version"));
     }
 
     private void wireFieldsWithCacheService() {
