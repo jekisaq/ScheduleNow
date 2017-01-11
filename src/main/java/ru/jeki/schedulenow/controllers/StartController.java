@@ -19,16 +19,22 @@ import ru.jeki.schedulenow.structures.User;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class StartController implements Initializable {
 
     private StartModel model = new StartModel();
+    private Properties configuration;
 
     @FXML private TextField groupNameField;
     @FXML private TextField subgroupField;
     @FXML private ChoiceBox<String> departmentMenu;
     @FXML private ProgressIndicator scheduleLoadIndicator;
+
+    public StartController(Properties configuration) {
+        this.configuration = configuration;
+    }
 
     public void initialize(URL location, ResourceBundle resources) {
         model.loadDepartments();
@@ -116,7 +122,7 @@ public class StartController implements Initializable {
 
         scheduleStage.setResizable(false);
         scheduleStage.setFullScreen(false);
-        scheduleStage.setTitle("Schedule Now - узнай расписание");
+        scheduleStage.setTitle(configuration.getProperty("scheduleNow.form.title"));
 
         scheduleStage.setScene(new Scene(root));
         scheduleStage.show();

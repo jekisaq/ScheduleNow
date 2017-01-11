@@ -6,16 +6,31 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import ru.jeki.schedulenow.cache.ApplicationCacheService;
+import ru.jeki.schedulenow.controllers.StartController;
 
 import java.io.IOException;
+import java.util.Properties;
 
 public class ScheduleNow extends Application {
 
+    private Properties configuration = new Properties();
+
+    @Override
+    public void init() throws Exception {
+        try {
+            configuration.load(getClass().getResourceAsStream("/app.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void start(Stage primaryStage) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/fxml/start.fxml"));
+            FXMLLoader loader = new FXMLLoader();
+            loader.setControllerFactory(type -> new StartController(configuration));
+            Parent root = loader.load(getClass().getResourceAsStream("/fxml/start.fxml"));
 
-            primaryStage.setTitle("Schedule Now - узнай расписание");
+            primaryStage.setTitle(configuration.getProperty("scheduleNow.form.title"));
             Scene scene = new Scene(root);
 
             primaryStage.setScene(scene);
@@ -29,5 +44,9 @@ public class ScheduleNow extends Application {
             System.out.println("Start fxml file not loaded.");
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        launch(ScheduleNow.class, args);
     }
 }
