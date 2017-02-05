@@ -1,5 +1,6 @@
 package ru.jeki.schedulenow.models;
 
+import com.google.common.collect.Lists;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jsoup.Connection;
@@ -8,6 +9,7 @@ import org.jsoup.nodes.Document;
 import ru.jeki.schedulenow.ExcelScheduleLoader;
 import ru.jeki.schedulenow.parsers.ReplacementsParser;
 import ru.jeki.schedulenow.parsers.spreadsheet.SpreadsheetParser;
+import ru.jeki.schedulenow.processingStages.ScheduleProcessing;
 import ru.jeki.schedulenow.structures.Lesson;
 import ru.jeki.schedulenow.structures.ScheduleDay;
 import ru.jeki.schedulenow.structures.User;
@@ -20,18 +22,22 @@ import java.util.stream.Collectors;
 
 public class ScheduleModel {
     private final User user;
-    private List<ScheduleDay> scheduleDays;
+    private ScheduleProcessing scheduleProvider;
+
+    private List<ScheduleDay> scheduleDays = Lists.newArrayList();
 
     public ScheduleModel(User user) {
         this.user = user;
     }
 
     public void buildSchedule() throws IOException {
-        System.out.println("ScheduleModel: Building schedule");
-
         parseReplacements();
         filterLessonsOnGroupAndSubgroup();
         completeScheduleFromXls();
+    }
+
+    public List<ScheduleDay> getScheduleDays() {
+        return scheduleDays;
     }
 
     private void parseReplacements() throws IOException {
@@ -69,24 +75,6 @@ public class ScheduleModel {
             scheduleDay.lessons().list().clear();
             scheduleDay.lessons().list().addAll(filteredLessons);
         }
-    }
-
-    public List<Lesson> getScheduleLessons(String scheduleDayName) {
-        return scheduleDays.stream()
-                .filter(scheduleDay -> scheduleDay.getDayOfWeekName().equalsIgnoreCase(scheduleDayName))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("There's no lessons by this day"))
-                .lessons().list();
-    }
-
-    public List<String> getReplacementDayNames() {
-        return scheduleDays
-                .stream()
-                .map(scheduleDay -> makeFirstSymbolInUpperCase(scheduleDay.getDayOfWeekName()))
-                .collect(Collectors.toList());
-    }
-
-    private String makeFirstSymbolInUpperCase(String source) {
-        return source.substring(0, 1).toUpperCase() + source.substring(1);
     }
 
 }

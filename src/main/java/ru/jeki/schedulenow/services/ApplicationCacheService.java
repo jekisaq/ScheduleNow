@@ -1,4 +1,4 @@
-package ru.jeki.schedulenow.cache;
+package ru.jeki.schedulenow.services;
 
 import javafx.beans.property.StringProperty;
 import ru.jeki.schedulenow.AlertBox;

@@ -6,7 +6,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import ru.jeki.schedulenow.AlertBox;
-import ru.jeki.schedulenow.cache.ApplicationCacheService;
+import ru.jeki.schedulenow.services.ApplicationCacheService;
 
 import java.io.IOException;
 import java.net.URL;
