@@ -5,3 +5,5 @@ Everyone is able to use this application to see a ntgmk-college schedule for a s
 The application combines two schedules: the one is main, the next often replaces previous schedule.
 
 All information about the college may be found in [site of NTGMK-college](http://ntgmk.ru).
+# Requirements
+* Java 8 installed on your PC
