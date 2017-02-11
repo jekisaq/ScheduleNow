@@ -31,7 +31,7 @@ public class ScheduleNow extends Application {
             loader.setControllerFactory(type -> new StartController(configuration));
             Parent root = loader.load(getClass().getResourceAsStream("/fxml/start.fxml"));
 
-            primaryStage.setTitle(configuration.getProperty("scheduleNow.form.title"));
+            primaryStage.setTitle(configuration.getProperty("form.title"));
             Scene scene = new Scene(root);
 
             primaryStage.setScene(scene);

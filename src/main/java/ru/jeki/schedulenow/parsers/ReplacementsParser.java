@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ReplacementsParser implements Parser {
+public class ReplacementsParser {
 
     private final Document rawHtmlDocument;
     private List<ScheduleDay> scheduleDays = Lists.newArrayList();
@@ -21,7 +21,6 @@ public class ReplacementsParser implements Parser {
         this.rawHtmlDocument = document;
     }
 
-    @Override
     public List<ScheduleDay> parse() {
         parseScheduleDays();
         parseLessonsForScheduleDays();

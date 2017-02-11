@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -33,8 +34,8 @@ public class ScheduleController implements Initializable {
 
     @FXML private ListView<String> daysListView;
 
-    ScheduleController(User user) {
-        this.model = new ScheduleModel(user);
+    ScheduleController(User user, Properties configuration) {
+        this.model = new ScheduleModel(user, configuration);
     }
 
     @Override

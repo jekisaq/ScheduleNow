@@ -7,14 +7,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Optional;
 
-public class ExcelScheduleLoader {
+public class SpreadsheetScheduleLoader {
 
     private final URL linkToDepartmentSchedule;
     private final Path localFilePath;
 
-    public ExcelScheduleLoader(URL linkToDepartmentSchedule) {
+    public SpreadsheetScheduleLoader(URL linkToDepartmentSchedule) {
         this.linkToDepartmentSchedule = linkToDepartmentSchedule;
         this.localFilePath = Paths.get("cache", "schedule", retrieveFileNameFromScheduleURL()).toAbsolutePath();
     }
@@ -24,8 +23,8 @@ public class ExcelScheduleLoader {
         return strings[strings.length - 1];
     }
 
-    public Optional<InputStream> loadInputStream() {
-        Optional<InputStream> optionalLoadedExcelScheduleInputStream = Optional.empty();
+    public InputStream getInputStream() {
+        InputStream scheduleInputStream;
 
         try {
             if (!Files.exists(localFilePath)) {
@@ -34,13 +33,12 @@ public class ExcelScheduleLoader {
                 loadFromInternet();
             }
 
-            optionalLoadedExcelScheduleInputStream = Optional.of(Files.newInputStream(localFilePath));
+            scheduleInputStream = Files.newInputStream(localFilePath);
         } catch (IOException e) {
-            System.out.println("Excel schedule file cannot be load. May be load from internet isn't working...");
-            e.printStackTrace();
+            throw new IllegalStateException("Spreadsheet schedule file cannot be loaded. May be load from Internet isn't working...", e);
         }
 
-        return optionalLoadedExcelScheduleInputStream;
+        return scheduleInputStream;
     }
 
     private void loadFromInternet() throws IOException {

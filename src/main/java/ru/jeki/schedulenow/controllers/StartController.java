@@ -49,7 +49,7 @@ public class StartController implements Initializable {
     }
 
     private void addVersionToForm() {
-        versionContainer.setText(configuration.getProperty("scheduleNow.version"));
+        versionContainer.setText(configuration.getProperty("version"));
     }
 
     private void wireFieldsWithCacheService() {
@@ -124,13 +124,13 @@ public class StartController implements Initializable {
 
     private void tryToOpenScheduleWindow() throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        loader.setControllerFactory(type -> new ScheduleController(getConstructedUser()));
+        loader.setControllerFactory(type -> new ScheduleController(getConstructedUser(), configuration));
         Parent root = loader.load(getClass().getResourceAsStream("/fxml/schedule.fxml"));
         Stage scheduleStage = new Stage();
 
         scheduleStage.setResizable(false);
         scheduleStage.setFullScreen(false);
-        scheduleStage.setTitle(configuration.getProperty("scheduleNow.form.title"));
+        scheduleStage.setTitle(configuration.getProperty("form.title"));
 
         scheduleStage.setScene(new Scene(root));
         scheduleStage.show();
