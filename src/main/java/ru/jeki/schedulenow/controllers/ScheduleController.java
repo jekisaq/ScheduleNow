@@ -18,10 +18,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class ScheduleController implements Initializable {
+public class ScheduleController implements Controller, Initializable {
 
+    private final Supplier<User> userSupplier;
     private ScheduleModel model;
     private List<ScheduleDay> scheduleDays;
 
@@ -34,26 +36,29 @@ public class ScheduleController implements Initializable {
 
     @FXML private ListView<String> daysListView;
 
-    ScheduleController(User user, Properties configuration) {
-        this.model = new ScheduleModel(user, configuration);
+    public ScheduleController(Supplier<User> userSupplier, Properties configuration) {
+        this.userSupplier = userSupplier;
+        this.model = new ScheduleModel(configuration);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        lessonNumber.setCellValueFactory(new PropertyValueFactory<>("number"));
+        subject.setCellValueFactory(new PropertyValueFactory<>("subject"));
+        cabinet.setCellValueFactory(new PropertyValueFactory<>("cabinet"));
+        teacher.setCellValueFactory(new PropertyValueFactory<>("teacher"));
+    }
+
+    @Override
+    public void onSceneApply() {
         try {
-            model.buildSchedule();
+            model.buildSchedule(userSupplier.get());
         } catch (IOException | IllegalStateException e) {
             AlertBox.display("Schedule Now - Ошибка", "Возникла ошибка: \n" + e.getLocalizedMessage());
             e.printStackTrace();
         }
 
         scheduleDays = model.getScheduleDays();
-
-        lessonNumber.setCellValueFactory(new PropertyValueFactory<>("number"));
-        subject.setCellValueFactory(new PropertyValueFactory<>("subject"));
-        cabinet.setCellValueFactory(new PropertyValueFactory<>("cabinet"));
-        teacher.setCellValueFactory(new PropertyValueFactory<>("teacher"));
-
         daysListView.getItems().addAll(getReplacementDayNames());
     }
 

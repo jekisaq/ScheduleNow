@@ -12,22 +12,19 @@ import java.util.List;
 import java.util.Properties;
 
 public class ScheduleModel {
-    private final User user;
-    private ScheduleProcess mainScheduleProvider;
+    private String siteReplacementScheduleLink;
 
     private List<ScheduleDay> scheduleDays = Lists.newArrayList();
 
-    public ScheduleModel(User user, Properties configuration) {
-        this.user = user;
+    public ScheduleModel(Properties configuration) {
 
-        String siteReplacementScheduleLink = configuration.getProperty("site.link")
+        siteReplacementScheduleLink = configuration.getProperty("site.link")
                 + configuration.getProperty("schedule.site.filename");
-
-        ScheduleProcess siteProcess = new SiteScheduleProcess(siteReplacementScheduleLink);
-        this.mainScheduleProvider = new SpreadsheetScheduleProcess(siteProcess, user.getLinkToDepartmentSchedule());
     }
 
-    public void buildSchedule() throws IOException {
+    public void buildSchedule(User user) throws IOException {
+        ScheduleProcess siteProcess = new SiteScheduleProcess(siteReplacementScheduleLink);
+        ScheduleProcess mainScheduleProvider = new SpreadsheetScheduleProcess(siteProcess, user.getLinkToDepartmentSchedule());
         scheduleDays = mainScheduleProvider.getSchedule(user);
     }
 

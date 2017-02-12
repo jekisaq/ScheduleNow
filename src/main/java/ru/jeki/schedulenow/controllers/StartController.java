@@ -2,31 +2,28 @@ package ru.jeki.schedulenow.controllers;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
+import org.apache.log4j.Logger;
 import ru.jeki.schedulenow.AlertBox;
 import ru.jeki.schedulenow.models.StartModel;
+import ru.jeki.schedulenow.services.SceneNavigationService;
+import ru.jeki.schedulenow.services.Services;
 import ru.jeki.schedulenow.structures.User;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-public class StartController implements Initializable {
+public class StartController implements Controller {
 
     private StartModel model = new StartModel();
     private Properties configuration;
+
+    private Logger logger = Logger.getLogger(getClass());
 
     @FXML private TextField groupNameField;
     @FXML private TextField subgroupField;
@@ -46,6 +43,22 @@ public class StartController implements Initializable {
 
         wireFieldsWithCacheService();
         model.fillProperties();
+    }
+
+    @Override
+    public void onSceneApply() {}
+
+    public User getConstructedUser() {
+        return new User(groupNameField.getText(), Integer.valueOf(subgroupField.getText()), model.getDepartmentSchedule(departmentMenu.getValue()));
+    }
+
+    public void onShowScheduleRequest() {
+        scheduleLoadIndicator.setVisible(true);
+        departmentMenu.setDisable(false);
+        groupNameField.setEditable(false);
+        subgroupField.setEditable(false);
+
+        openScheduleWindow();
     }
 
     private void addVersionToForm() {
@@ -92,52 +105,12 @@ public class StartController implements Initializable {
         departmentMenu.setValue(departmentMenu.getItems().get(0));
     }
 
-
-    public void onShowScheduleRequest(ActionEvent event) {
-        scheduleLoadIndicator.setVisible(true);
-        departmentMenu.setDisable(false);
-        groupNameField.setEditable(false);
-        subgroupField.setEditable(false);
-
-        openScheduleWindow();
-
-        Stage currentStage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        currentStage.close();
-    }
-
     private void openScheduleWindow() {
         try {
-            tryToOpenScheduleWindow();
-        } catch (IOException e) {
-            System.out.println("Scene schedule cannot be opened, showed and so on...");
-            System.out.println();
-
-            e.printStackTrace();
+            Services.getService(SceneNavigationService.class).apply("schedule");
         } catch (IllegalStateException e) {
             AlertBox.display("Schedule now", "Произошла ошибка. \nВозможно отсутствует шапка в заменах.");
-            System.out.println("There's no header in replacements");
-            System.out.println();
-
-            e.printStackTrace();
+            logger.error("There's no header in replacements", e);
         }
     }
-
-    private void tryToOpenScheduleWindow() throws IOException {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setControllerFactory(type -> new ScheduleController(getConstructedUser(), configuration));
-        Parent root = loader.load(getClass().getResourceAsStream("/fxml/schedule.fxml"));
-        Stage scheduleStage = new Stage();
-
-        scheduleStage.setResizable(false);
-        scheduleStage.setFullScreen(false);
-        scheduleStage.setTitle(configuration.getProperty("form.title"));
-
-        scheduleStage.setScene(new Scene(root));
-        scheduleStage.show();
-    }
-
-    private User getConstructedUser() {
-        return new User(groupNameField.getText(), Integer.valueOf(subgroupField.getText()), model.getDepartmentSchedule(departmentMenu.getValue()));
-    }
-
 }

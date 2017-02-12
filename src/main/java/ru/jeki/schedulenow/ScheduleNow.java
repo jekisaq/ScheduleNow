@@ -4,10 +4,11 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import ru.jeki.schedulenow.controllers.ScheduleController;
 import ru.jeki.schedulenow.controllers.StartController;
-import ru.jeki.schedulenow.services.ApplicationCacheService;
+import ru.jeki.schedulenow.services.SceneNavigationService;
+import ru.jeki.schedulenow.services.Services;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -18,6 +19,10 @@ public class ScheduleNow extends Application {
 
     @Override
     public void init() throws Exception {
+        loadConfiguration();
+    }
+
+    private void loadConfiguration() {
         try {
             configuration.load(getClass().getResourceAsStream("/app.properties"));
         } catch (IOException e) {
@@ -26,27 +31,34 @@ public class ScheduleNow extends Application {
     }
 
     public void start(Stage primaryStage) {
+        loadSceneNavigator(primaryStage);
+
+        Services.getService(SceneNavigationService.class).apply("start");
+    }
+
+    private void loadSceneNavigator(Stage primaryStage) {
+        SceneNavigationService sceneNavigationService = new SceneNavigationService(primaryStage, configuration);
+
+        Parent root;
+        FXMLLoader loader;
         try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setControllerFactory(type -> new StartController(configuration));
-            Parent root = loader.load(getClass().getResourceAsStream("/fxml/start.fxml"));
+            StartController startController = new StartController(configuration);
+            loader = new FXMLLoader();
+            loader.setControllerFactory(type -> startController);
+            root = loader.load(getClass().getResourceAsStream("/fxml/start.fxml"));
+            sceneNavigationService.addScene("start", new Scene(root), startController);
 
-            primaryStage.setTitle(configuration.getProperty("form.title"));
-            Scene scene = new Scene(root);
-
-            primaryStage.setScene(scene);
-            primaryStage.setResizable(false);
-            primaryStage.setFullScreen(false);
-            primaryStage.setOnHidden(e -> ApplicationCacheService.getInstance().save());
-            Image image = new Image("icon32.png");
-            primaryStage.getIcons().add(image);
-
-            primaryStage.show();
-
+            loader = new FXMLLoader();
+            ScheduleController scheduleController = new ScheduleController(startController::getConstructedUser, configuration);
+            loader.setControllerFactory(type -> scheduleController);
+            root = loader.load(getClass().getResourceAsStream("/fxml/schedule.fxml"));
+            sceneNavigationService.addScene("schedule", new Scene(root), scheduleController);
         } catch (IOException e) {
             System.out.println("Start fxml file not loaded.");
             e.printStackTrace();
         }
+
+        Services.addService(sceneNavigationService);
     }
 
     public static void main(String[] args) {
