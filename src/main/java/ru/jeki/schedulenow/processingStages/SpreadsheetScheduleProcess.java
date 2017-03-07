@@ -9,17 +9,16 @@ import ru.jeki.schedulenow.structures.User;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 
 public class SpreadsheetScheduleProcess implements ScheduleProcess {
 
-    private final URL siteSpreadsheetScheduleLink;
+    private final String spreadsheetScheduleFileName;
     private ScheduleProcess previousStage;
 
-    public SpreadsheetScheduleProcess(ScheduleProcess previousStage, URL siteSpreadsheetScheduleLink) {
+    public SpreadsheetScheduleProcess(ScheduleProcess previousStage, String spreadsheetScheduleFileName) {
         this.previousStage = previousStage;
-        this.siteSpreadsheetScheduleLink = siteSpreadsheetScheduleLink;
+        this.spreadsheetScheduleFileName = spreadsheetScheduleFileName;
     }
 
     @Override
@@ -38,12 +37,12 @@ public class SpreadsheetScheduleProcess implements ScheduleProcess {
             SpreadsheetParser spreadsheetParser = new SpreadsheetParser(workbook, user, previousStageSchedule);
             spreadsheetParser.parse();
         } catch (IOException e) {
-            throw new IllegalStateException("The main schedule xls file might be invalid.");
+            throw new IllegalStateException("The main schedule xls file might be invalid.", e);
         }
     }
 
     private InputStream getScheduleInputStream() {
-        SpreadsheetScheduleLoader spreadsheetScheduleLoader = new SpreadsheetScheduleLoader(siteSpreadsheetScheduleLink);
+        SpreadsheetScheduleLoader spreadsheetScheduleLoader = new SpreadsheetScheduleLoader(spreadsheetScheduleFileName);
         return spreadsheetScheduleLoader.getInputStream();
     }
 }

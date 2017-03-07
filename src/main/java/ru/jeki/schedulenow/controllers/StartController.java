@@ -49,7 +49,9 @@ public class StartController implements Controller {
     public void onSceneApply() {}
 
     public User getConstructedUser() {
-        return new User(groupNameField.getText(), Integer.valueOf(subgroupField.getText()), model.getDepartmentSchedule(departmentMenu.getValue()));
+        String spreadsheetScheduleFileName = model.getSpreadsheetScheduleFileName(departmentMenu.getValue());
+
+        return new User(groupNameField.getText(), Integer.valueOf(subgroupField.getText()), spreadsheetScheduleFileName);
     }
 
     public void onShowScheduleRequest() {

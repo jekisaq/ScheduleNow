@@ -24,7 +24,7 @@ public class ScheduleModel {
 
     public void buildSchedule(User user) throws IOException {
         ScheduleProcess siteProcess = new SiteScheduleProcess(siteReplacementScheduleLink);
-        ScheduleProcess mainScheduleProvider = new SpreadsheetScheduleProcess(siteProcess, user.getLinkToDepartmentSchedule());
+        ScheduleProcess mainScheduleProvider = new SpreadsheetScheduleProcess(siteProcess, user.getSpreadsheetScheduleFileName());
         scheduleDays = mainScheduleProvider.getSchedule(user);
     }
 

@@ -10,17 +10,16 @@ import java.nio.file.StandardCopyOption;
 
 public class SpreadsheetScheduleLoader {
 
-    private final URL linkToDepartmentSchedule;
+    private final String spreadsheetScheduleFileName;
     private final Path localFilePath;
 
-    public SpreadsheetScheduleLoader(URL linkToDepartmentSchedule) {
-        this.linkToDepartmentSchedule = linkToDepartmentSchedule;
-        this.localFilePath = Paths.get("cache", "schedule", retrieveFileNameFromScheduleURL()).toAbsolutePath();
-    }
+    public SpreadsheetScheduleLoader(String spreadsheetScheduleFileName) {
+        this.spreadsheetScheduleFileName = spreadsheetScheduleFileName;
 
-    String retrieveFileNameFromScheduleURL() {
-        String[] strings = linkToDepartmentSchedule.getFile().split("/");
-        return strings[strings.length - 1];
+        String[] splits = spreadsheetScheduleFileName.split("/");
+        String realFileName = splits[splits.length - 1];
+
+        this.localFilePath = Paths.get("cache", "schedule", realFileName).toAbsolutePath();
     }
 
     public InputStream getInputStream() {
@@ -42,6 +41,7 @@ public class SpreadsheetScheduleLoader {
     }
 
     private void loadFromInternet() throws IOException {
-        Files.copy(linkToDepartmentSchedule.openStream(), localFilePath, StandardCopyOption.REPLACE_EXISTING);
+        URL spreadsheetScheduleURL = new URL(String.join("http://ntgmk.ru/", spreadsheetScheduleFileName));
+        Files.copy(spreadsheetScheduleURL.openStream(), localFilePath, StandardCopyOption.REPLACE_EXISTING);
     }
 }

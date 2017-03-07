@@ -1,17 +1,15 @@
 package ru.jeki.schedulenow.structures;
 
-import java.net.URL;
-
 public class User {
 
     private String groupName;
     private int subgroup;
-    private URL linkToDepartmentSchedule;
+    private String spreadsheetScheduleFileName;
 
-    public User(String groupName, int subgroup, URL linkToDepartmentSchedule) {
+    public User(String groupName, int subgroup, String spreadsheetScheduleFileName) {
         this.groupName = groupName;
         this.subgroup = subgroup;
-        this.linkToDepartmentSchedule = linkToDepartmentSchedule;
+        this.spreadsheetScheduleFileName = spreadsheetScheduleFileName;
     }
 
     public String getGroupName() {
@@ -23,7 +21,7 @@ public class User {
         return subgroup;
     }
 
-    public URL getLinkToDepartmentSchedule() {
-        return linkToDepartmentSchedule;
+    public String getSpreadsheetScheduleFileName() {
+        return spreadsheetScheduleFileName;
     }
 }

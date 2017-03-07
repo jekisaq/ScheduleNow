@@ -27,14 +27,15 @@ public class Lesson {
         return subject;
     }
 
-    public String getCabinet() {
-        return cabinet;
-    }
 
     public String getTeacher() {
         return teacher;
     }
 
+    // Don't delete getter. Idea raves...
+    public String getCabinet() {
+        return cabinet;
+    }
 
     public String getGroupName() {
         return groupName;
