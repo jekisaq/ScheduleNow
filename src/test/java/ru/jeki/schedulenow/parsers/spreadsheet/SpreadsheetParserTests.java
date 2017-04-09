@@ -5,89 +5,80 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Before;
 import org.junit.Test;
+import ru.jeki.schedulenow.parsers.ScheduleSourceTester;
 import ru.jeki.schedulenow.structures.Lesson;
-import ru.jeki.schedulenow.structures.ScheduleDay;
-import ru.jeki.schedulenow.structures.ScheduleDayType;
-import ru.jeki.schedulenow.structures.User;
+import ru.jeki.schedulenow.structures.Weeks;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 public class SpreadsheetParserTests {
 
-    private Workbook workbook;
+    private ScheduleSourceTester scheduleSourceTester;
 
     @Before
     public void setUp() throws IOException {
         InputStream workbookInputStream = getClass().getResourceAsStream("testWorkbook.xls");
-        this.workbook = new HSSFWorkbook(workbookInputStream);
+        Workbook workbook = new HSSFWorkbook(workbookInputStream);
+
+        SpreadsheetScheduleParser spreadsheetSchedule = new SpreadsheetScheduleParser();
+        spreadsheetSchedule.parse(workbook);
+
+        scheduleSourceTester = new ScheduleSourceTester(spreadsheetSchedule);
     }
 
     @Test
     public void mondaySpecifiedLessonsFor681Group() {
-        User user = new User("681", 1, null);
-        List<Lesson> expectedLessons = Lists.newArrayList();
-        expectedLessons.add(new Lesson(1, user.getGroupName(), user.getSubgroup(),
-                "Рус.язык", "309-2", "Кайгородова"));
-        expectedLessons.add(new Lesson(2, user.getGroupName(), user.getSubgroup(),
-                "ОБЖ", "9-1", "Селяхина"));
-        expectedLessons.add(new Lesson(3, user.getGroupName(), user.getSubgroup(),
-                "математика", "318-2", "Захарова"));
-        expectedLessons.add(new Lesson(5, user.getGroupName(), user.getSubgroup(),
-                "Математика: алг,", "", ""));
+        String group = "681";
+        int subgroup = 1;
 
-        testByTemplate(expectedLessons, user, "понедельник");
+        List<Lesson> expectedLessons = Lists.newArrayList();
+        expectedLessons.add(new Lesson(1, group, subgroup,
+                "Рус.язык", "309-2", "Кайгородова", Weeks.NUMERATOR));
+        expectedLessons.add(new Lesson(2, group, subgroup,
+                "ОБЖ", "9-1", "Селяхина", Weeks.NUMERATOR));
+        expectedLessons.add(new Lesson(3, group, subgroup,
+                "математика", "318-2", "Захарова", Weeks.NUMERATOR));
+        expectedLessons.add(new Lesson(5, group, subgroup,
+                "Математика: алг,", "", "", Weeks.NUMERATOR));
+
+        LocalDate numeratorMonday = LocalDate.of(2017, 4, 10);
+        scheduleSourceTester.testLessons(expectedLessons, group, subgroup, numeratorMonday);
     }
 
     @Test
     public void tuesdaySpecifiedLessonsFor571Group() {
-        User user = new User("571", 1, null);
-        List<Lesson> expectedLessons = Lists.newArrayList();
-        expectedLessons.add(new Lesson(1, user.getGroupName(), user.getSubgroup(),
-                "Материалов.", "18-", "Скоробогатова"));
-        expectedLessons.add(new Lesson(2, user.getGroupName(), user.getSubgroup(),
-                "БЖ", "21-1", "Смирнова"));
-        expectedLessons.add(new Lesson(3, user.getGroupName(), user.getSubgroup(),
-                "Осн.экономики орг", "402-2", "Емакаева"));
+        String group = "571";
+        int subgroup = 1;
 
-        testByTemplate(expectedLessons, user, "вторник");
+        List<Lesson> expectedLessons = Lists.newArrayList();
+        expectedLessons.add(new Lesson(1, group, subgroup,
+                "Материалов.", "18-", "Скоробогатова", Weeks.NUMERATOR));
+        expectedLessons.add(new Lesson(2, group, subgroup,
+                "БЖ", "21-1", "Смирнова", Weeks.NUMERATOR));
+        expectedLessons.add(new Lesson(3, group, subgroup,
+                "Осн.экономики орг", "402-2", "Емакаева", Weeks.NUMERATOR));
+
+        LocalDate numeratorTuesday = LocalDate.of(2017, 4, 11);
+        scheduleSourceTester.testLessons(expectedLessons, group, subgroup, numeratorTuesday);
     }
 
     @Test
     public void labWorkReadingTest() {
-        User user = new User("521", 2, null);
+        String group = "521";
+        int subgroup = 2;
+
         List<Lesson> expectedLessons = Lists.newArrayList();
-        expectedLessons.add(new Lesson(1, user.getGroupName(), user.getSubgroup(),
-                "информатика", "305-4", "Прокопьева"));
-        expectedLessons.add(new Lesson(2, user.getGroupName(), user.getSubgroup(),
-                "Устройство автомо", "204-4", "Поминова"));
-        expectedLessons.add(new Lesson(3, user.getGroupName(), user.getSubgroup(),
-                "Физ-ра", "", "Цыганенко"));
+        expectedLessons.add(new Lesson(1, group, subgroup,
+                "информатика", "305-4", "Прокопьева", Weeks.NUMERATOR));
+        expectedLessons.add(new Lesson(2, group, subgroup,
+                "Устройство автомо", "204-4", "Поминова", Weeks.NUMERATOR));
+        expectedLessons.add(new Lesson(3, group, subgroup,
+                "Физ-ра", "", "Цыганенко", Weeks.NUMERATOR));
 
-        testByTemplate(expectedLessons, user, "вторник");
-    }
-
-    private void testByTemplate(List<Lesson> expectedLessons, User user, String dayOfWeek) {
-        testByTemplate(expectedLessons, user, dayOfWeek, ScheduleDayType.Numerator);
-    }
-
-    private void testByTemplate(List<Lesson> expectedLessons, User user, String dayOfWeekName, ScheduleDayType dayType) {
-        ScheduleDay scheduleDay = new ScheduleDay(dayType, dayOfWeekName);
-        List<ScheduleDay> scheduleDays = Lists.newArrayList(
-                scheduleDay);
-
-        SpreadsheetParser spreadsheetParser = new SpreadsheetParser(workbook, user, scheduleDays);
-        spreadsheetParser.parse();
-
-        List<Lesson> parsedLessons = scheduleDay.lessons().list();
-
-        for (int i = 0; i < expectedLessons.size(); i++) {
-            Lesson expectedLesson = expectedLessons.get(i);
-            Lesson parsedLesson = parsedLessons.get(i);
-            assertEquals(expectedLesson, parsedLesson);
-        }
+        LocalDate numeratorTuesday = LocalDate.of(2017, 4, 11);
+        scheduleSourceTester.testLessons(expectedLessons, group, subgroup, numeratorTuesday);
     }
 }

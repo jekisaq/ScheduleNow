@@ -1,12 +1,12 @@
 package ru.jeki.schedulenow.structures;
 
 public class ScheduleDay {
-    private ScheduleDayType dayType;
+    private Weeks week;
     private String dayOfWeekName;
     private Lessons lessons = new Lessons();
 
-    public ScheduleDay(ScheduleDayType dayType, String dayOfWeekName) {
-        this.dayType = dayType;
+    public ScheduleDay(Weeks week, String dayOfWeekName) {
+        this.week = week;
         this.dayOfWeekName = dayOfWeekName;
     }
 
@@ -14,8 +14,8 @@ public class ScheduleDay {
         return lessons;
     }
 
-    public ScheduleDayType getDayType() {
-        return dayType;
+    public Weeks getWeek() {
+        return week;
     }
 
     public String getDayOfWeekName() {
@@ -25,7 +25,7 @@ public class ScheduleDay {
     @Override
     public String toString() {
         return "ScheduleDay{" +
-                "dayType=" + dayType +
+                "week=" + week +
                 ", dayOfWeekName='" + dayOfWeekName + '\'' +
                 ", lessons=" + lessons +
                 '}';

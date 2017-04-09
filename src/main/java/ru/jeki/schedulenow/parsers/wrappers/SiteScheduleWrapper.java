@@ -1,4 +1,4 @@
-package ru.jeki.schedulenow.processingStages;
+package ru.jeki.schedulenow.parsers.wrappers;
 
 import com.google.common.collect.Lists;
 import org.jsoup.Connection;
@@ -11,42 +11,52 @@ import ru.jeki.schedulenow.structures.User;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class SiteScheduleProcess implements ScheduleProcess {
+public class SiteScheduleWrapper implements ScheduleWrapper {
 
     private final String siteReplacementScheduleLink;
+    private final ReplacementsParser replacementsParser;
     private Document siteSchedule;
     private List<ScheduleDay> scheduleDays = Lists.newArrayList();
 
-    public SiteScheduleProcess(String siteReplacementScheduleLink) {
+    public SiteScheduleWrapper(String siteReplacementScheduleLink) {
         this.siteReplacementScheduleLink = siteReplacementScheduleLink;
+
+        loadRawSiteSchedule();
+
+        replacementsParser = new ReplacementsParser(siteSchedule);
+        replacementsParser.parse();
     }
 
 
     @Override
     public List<ScheduleDay> getSchedule(User user) {
-        try {
-            loadDocument();
-            prepareRawReplacementSchedule();
-            applyLessonFilter(groupEqualsFilter(user.getGroupName()));
-            applyLessonFilter(subgroupSuitableFilter(user.getSubgroup()));
-        } catch (IOException e) {
-            throw new IllegalStateException("Расписание с сайта или сам сайт ntgmk.ru недоступен!", e);
-        }
+        prepareRawReplacementSchedule();
+        applyLessonFilter(groupEqualsFilter(user.getGroupName()));
+        applyLessonFilter(subgroupSuitableFilter(user.getSubgroup()));
 
         return scheduleDays;
     }
 
-    private void loadDocument() throws IOException {
-        Connection connection = Jsoup.connect(siteReplacementScheduleLink);
-        siteSchedule =  connection.get();
+    @Override
+    public Set<String> getGroups() {
+        return replacementsParser.getGroups();
+    }
+
+    private void loadRawSiteSchedule() {
+        try {
+            Connection connection = Jsoup.connect(siteReplacementScheduleLink);
+            siteSchedule =  connection.get();
+        } catch (IOException e) {
+            throw new IllegalStateException("Расписание с сайта или сам сайт ntgmk.ru недоступен!", e);
+        }
     }
 
     private void prepareRawReplacementSchedule() {
-        ReplacementsParser replacementsParser = new ReplacementsParser(siteSchedule);
-        scheduleDays = replacementsParser.parse();
+        scheduleDays = replacementsParser.getScheduleDays();
     }
 
     private void applyLessonFilter(Predicate<? super Lesson> predicate) {

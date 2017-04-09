@@ -64,7 +64,7 @@ public class ApplicationCacheService {
         try (FileOutputStream cacheFileOutputStream = new FileOutputStream(CACHE_FILE)) {
             fieldValues.store(cacheFileOutputStream, "");
         } catch (Exception e) {
-            AlertBox.display("Schedule Now", "Ошибка: Данные в форме не сохранены.");
+            AlertBox.display("ScheduleSource Now", "Ошибка: Данные в форме не сохранены.");
         }
     }
 

@@ -30,7 +30,7 @@ public class StartModel {
                     .filter(element -> !element.attr("href").contains("view_zamen.php"))
                     .collect(Collectors.toMap(Element::text, element-> element.attr("href")));
         } catch (IOException e) {
-            AlertBox.display("Schedule Now", "Ошибка: невозможно загрузить список отделений. Наверно сайт ntgmk.ru упал!");
+            AlertBox.display("ScheduleSource Now", "Ошибка: невозможно загрузить список отделений. Наверно сайт ntgmk.ru упал!");
             e.printStackTrace();
         }
     }
@@ -42,7 +42,7 @@ public class StartModel {
 
     public String getSpreadsheetScheduleFileName(String department) {
         if (!departmentToSpreadsheetScheduleFileName.containsKey(department)) {
-            throw new IllegalArgumentException("There's no specified department in the department read list from ntgmk.ru");
+            throw new IllegalArgumentException("There's no specified department in the department map list from ntgmk.ru");
         }
 
         return departmentToSpreadsheetScheduleFileName.get(department);

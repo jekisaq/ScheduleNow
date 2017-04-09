@@ -54,7 +54,7 @@ public class ScheduleController implements Controller, Initializable {
         try {
             model.buildSchedule(userSupplier.get());
         } catch (IOException | IllegalStateException e) {
-            AlertBox.display("Schedule Now - Ошибка", "Возникла ошибка: \n" + e.getLocalizedMessage());
+            AlertBox.display("ScheduleSource Now - Ошибка", "Возникла ошибка: \n" + e.getLocalizedMessage());
             e.printStackTrace();
         }
 

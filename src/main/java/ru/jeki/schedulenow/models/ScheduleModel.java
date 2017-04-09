@@ -1,9 +1,9 @@
 package ru.jeki.schedulenow.models;
 
 import com.google.common.collect.Lists;
-import ru.jeki.schedulenow.processingStages.ScheduleProcess;
-import ru.jeki.schedulenow.processingStages.SiteScheduleProcess;
-import ru.jeki.schedulenow.processingStages.SpreadsheetScheduleProcess;
+import ru.jeki.schedulenow.parsers.wrappers.ScheduleWrapper;
+import ru.jeki.schedulenow.parsers.wrappers.SiteScheduleWrapper;
+import ru.jeki.schedulenow.parsers.wrappers.SpreadsheetScheduleWrapper;
 import ru.jeki.schedulenow.structures.ScheduleDay;
 import ru.jeki.schedulenow.structures.User;
 
@@ -23,8 +23,8 @@ public class ScheduleModel {
     }
 
     public void buildSchedule(User user) throws IOException {
-        ScheduleProcess siteProcess = new SiteScheduleProcess(siteReplacementScheduleLink);
-        ScheduleProcess mainScheduleProvider = new SpreadsheetScheduleProcess(siteProcess, user.getSpreadsheetScheduleFileName());
+        ScheduleWrapper siteProcess = new SiteScheduleWrapper(siteReplacementScheduleLink);
+        ScheduleWrapper mainScheduleProvider = new SpreadsheetScheduleWrapper(siteProcess, user.getSpreadsheetScheduleFileName());
         scheduleDays = mainScheduleProvider.getSchedule(user);
     }
 

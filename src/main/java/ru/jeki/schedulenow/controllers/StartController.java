@@ -111,7 +111,7 @@ public class StartController implements Controller {
         try {
             Services.getService(SceneNavigationService.class).apply("schedule");
         } catch (IllegalStateException e) {
-            AlertBox.display("Schedule now", "Произошла ошибка. \nВозможно отсутствует шапка в заменах.");
+            AlertBox.display("ScheduleSource now", "Произошла ошибка. \nВозможно отсутствует шапка в заменах.");
             logger.error("There's no header in replacements", e);
         }
     }
