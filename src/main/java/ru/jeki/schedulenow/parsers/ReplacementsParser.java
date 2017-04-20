@@ -1,139 +1,112 @@
 package ru.jeki.schedulenow.parsers;
 
-import com.google.common.collect.Lists;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.jeki.schedulenow.structures.Lesson;
 import ru.jeki.schedulenow.structures.Lessons;
-import ru.jeki.schedulenow.structures.ScheduleDay;
 import ru.jeki.schedulenow.structures.Weeks;
 
 import java.time.LocalDate;
-import java.time.format.TextStyle;
-import java.util.Iterator;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ReplacementsParser implements ScheduleSource {
 
+    private static final String TABLE_ENTRY_SELECTOR = "table tbody tr";
+
     private final Document rawHtmlDocument;
-    private List<ScheduleDay> scheduleDays = Lists.newArrayList();
+    private Map<LocalDate, Lessons> dateToLessonsMap = new HashMap<>();
 
     public ReplacementsParser(Document document) {
         this.rawHtmlDocument = document;
     }
 
-    public List<ScheduleDay> getScheduleDays() {
-        return scheduleDays;
-    }
-
     public void parse() {
-        parseScheduleDays();
         parseLessons();
     }
 
-    private void parseScheduleDays() {
-        Elements dayHeaders = rawHtmlDocument.select("td[colspan=7]");
-
-        scheduleDays = dayHeaders.stream()
-                .map(Element::text)
-                .map(DayHeader::new)
-                .map(header -> new ScheduleDay(header.week, header.dayOfWeek))
-                .collect(Collectors.toList());
-    }
-
     private void parseLessons() {
-        if (scheduleDays.iterator().hasNext()) {
-            parseLessonsOnAnyScheduleDayExists();
-        }
-    }
+        Elements tableEntries = rawHtmlDocument.select(TABLE_ENTRY_SELECTOR);
 
-    private void parseLessonsOnAnyScheduleDayExists() {
-        Elements replacementsRows = rawHtmlDocument.select("table tbody tr");
-        Iterator<ScheduleDay> scheduleDayIterator = scheduleDays.iterator();
-        ScheduleDay processingScheduleDay = null;
-        boolean hadSpace = false;
+        LocalDate parsingDate = null;
 
-        for (Element replacementsRow : replacementsRows) {
-            Elements filteredReplacementColumns = replacementsRow.select("td[height=12]");
+        for (Element entry : tableEntries) {
+            if (isDayHeader(entry)) {
+                parsingDate = parseDayHeaderDate(entry);
+                dateToLessonsMap.put(parsingDate, new Lessons());
 
-            if (isLessonReplacementRow(filteredReplacementColumns)) {
-                if (hadSpace) {
-                    processingScheduleDay = scheduleDayIterator.next();
-                    hadSpace = false;
-                }
-
-                Lesson lesson = parseLessonInstanceFrom(filteredReplacementColumns, processingScheduleDay.getWeek());
-                processingScheduleDay.lessons().add(lesson);
-            } else if (hadSpace) {
-                continue;
-            } else {
-                hadSpace = true;
+            } else if (isLesson(entry) && parsingDate != null) {
+                Lesson lesson = parseLesson(entry.children(), Weeks.of(parsingDate));
+                dateToLessonsMap.get(parsingDate).add(lesson);
             }
+
         }
     }
 
-    private Lesson parseLessonInstanceFrom(Elements filteredReplacementColumns, Weeks week) {
-        String group = filteredReplacementColumns.get(0).text().trim();
-        int lessonNumber = Integer.valueOf(filteredReplacementColumns.get(1).text());
+    private LocalDate parseDayHeaderDate(Element entry) {
+        String[] dayHeaderWords = entry.child(0).text().split("\\s+");
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", new Locale("ru"));
+
+        return LocalDate.parse(dayHeaderWords[1], dateFormatter);
+    }
+
+    private boolean isDayHeader(Element entry) {
+        return entry.children().size() == 1;
+    }
+
+    private Lesson parseLesson(Elements columns, Weeks week) {
+        String group = columns.get(0).text().trim();
+        int lessonNumber = Integer.valueOf(columns.get(1).text());
 
         int subgroup;
 
         try {
-            subgroup = Integer.parseInt(filteredReplacementColumns.get(2).text());
+            subgroup = Integer.parseInt(columns.get(2).text());
         } catch (NumberFormatException e) {
             subgroup = 0;
         }
 
-        String subject = filteredReplacementColumns.get(4).text().trim();
-        String teacher = filteredReplacementColumns.get(5).text().trim();
-        String cabinet  = filteredReplacementColumns.get(6).text().trim();
+        String subject = columns.get(4).text().trim();
+        String teacher = columns.get(5).text().trim();
+        String cabinet  = columns.get(6).text().trim();
 
         return new Lesson(lessonNumber, group, subgroup, subject, cabinet, teacher, week);
     }
 
-    private boolean isLessonReplacementRow(Elements filteredReplacementColumns) {
-        return filteredReplacementColumns.size() == 7;
+    private boolean isLesson(Element entry) {
+        return entry.children().size() == 7 && !isLessonLegend(entry);
+    }
+
+    private boolean isLessonLegend(Element entry) {
+        return entry.child(0).text().equalsIgnoreCase("группа");
     }
 
     public Set<String> getGroups() {
-
-        // Mapping schedule days to a set of groups
-
-        return scheduleDays.stream()
-                .map(scheduleDay -> scheduleDay.lessons().list())
-                .flatMap(List::stream)
+        return dateToLessonsMap.values().stream()
+                .flatMap(Lessons::stream)
                 .map(Lesson::getGroupName)
                 .collect(Collectors.toSet());
     }
 
     @Override
     public Lessons getDayLessons(String group, int subgroup, LocalDate date) {
-        Weeks week = Weeks.of(date);
-        String dayOfWeek = date.getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("ru"));
+        if (!dateToLessonsMap.containsKey(date)) {
+            return new Lessons();
+        }
 
-        ScheduleDay day = scheduleDays.stream()
-                .filter(scheduleDay -> scheduleDay.getWeek().equals(week))
-                .filter(scheduleDay -> scheduleDay.getDayOfWeekName().equalsIgnoreCase(dayOfWeek))
-                .findAny().orElseThrow(IllegalArgumentException::new);
+        Lessons lessonsOfGroup = dateToLessonsMap.get(date).filterBy(group);
 
-
-        Lessons lessons1 = day.lessons().filterBy(group);
-        return lessons1.filterBy(subgroup);
+        return lessonsOfGroup.filterBy(subgroup);
     }
 
-    private class DayHeader {
-        private final String dayOfWeek;
-        private final Weeks week;
-
-        private DayHeader(String rawDayHeader) {
-            String[] dayHeaderWords = rawDayHeader.split("\\s+");
-
-            this.dayOfWeek = dayHeaderWords[2];
-            this.week = Weeks.of(dayHeaderWords[3]);
-        }
+    @Override
+    public Set<LocalDate> getDayDates() {
+        return dateToLessonsMap.keySet();
     }
 }

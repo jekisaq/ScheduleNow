@@ -1,0 +1,9 @@
+.group-field:focused {
+    -fx-faint-focus-color: transparent;
+    -fx-focus-color: rgba(66, 209, 249, 0.54); /* here rgba (corrected) */
+}
+
+.group-field:error {
+    -fx-border-color:rgba(255,0,0,0.6); /* here rgba (corrected) */
+    -fx-effect: dropshadow(gaussian, rgba(255,0,0,0.6), 1, 1, 0, 0);
+}

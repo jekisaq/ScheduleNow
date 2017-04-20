@@ -78,6 +78,11 @@ public class SpreadsheetScheduleParser implements ScheduleSource {
         return day.lessons().filterBy(subgroup);
     }
 
+    @Override
+    public Set<LocalDate> getDayDates() {
+        return null;
+    }
+
     public Set<String> getGroups() {
         return groupToColumnNum.keySet();
     }

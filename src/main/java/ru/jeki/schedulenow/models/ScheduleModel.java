@@ -1,35 +1,68 @@
 package ru.jeki.schedulenow.models;
 
 import com.google.common.collect.Lists;
-import ru.jeki.schedulenow.parsers.wrappers.ScheduleWrapper;
-import ru.jeki.schedulenow.parsers.wrappers.SiteScheduleWrapper;
-import ru.jeki.schedulenow.parsers.wrappers.SpreadsheetScheduleWrapper;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import ru.jeki.schedulenow.parsers.ScheduleSource;
+import ru.jeki.schedulenow.services.ApplicationPropertyCache;
 import ru.jeki.schedulenow.structures.ScheduleDay;
-import ru.jeki.schedulenow.structures.User;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 
 public class ScheduleModel {
-    private String siteReplacementScheduleLink;
 
+    private ScheduleSource spreadsheetSchedule;
     private List<ScheduleDay> scheduleDays = Lists.newArrayList();
+    private ApplicationPropertyCache formCache;
 
-    public ScheduleModel(Properties configuration) {
+    private StringProperty chosenGroup = new SimpleStringProperty();
+    private IntegerProperty chosenSubgroup = new SimpleIntegerProperty();
 
-        siteReplacementScheduleLink = configuration.getProperty("site.link")
-                + configuration.getProperty("schedule.site.filename");
+    public ScheduleModel(ApplicationPropertyCache formCache) {
+        this.formCache = formCache;
+
+        releaseChosenGroupProperty();
+        releaseChosenSubgroupProperty();
     }
 
-    public void buildSchedule(User user) throws IOException {
-        ScheduleWrapper siteProcess = new SiteScheduleWrapper(siteReplacementScheduleLink);
-        ScheduleWrapper mainScheduleProvider = new SpreadsheetScheduleWrapper(siteProcess, user.getSpreadsheetScheduleFileName());
-        scheduleDays = mainScheduleProvider.getSchedule(user);
+    public String getChosenGroup() {
+        return chosenGroup.get();
+    }
+
+    public StringProperty chosenGroupProperty() {
+        return chosenGroup;
+    }
+
+    public int getChosenSubgroup() {
+        return chosenSubgroup.get();
+    }
+
+    public IntegerProperty chosenSubgroupProperty() {
+        return chosenSubgroup;
+    }
+
+    private void releaseChosenSubgroupProperty() {
+        chosenSubgroup.addListener((observable, oldValue, newValue) ->
+                formCache.setProperty("subgroup", String.valueOf(newValue)));
+        chosenSubgroup.set(Integer.parseInt(formCache.getProperty("subgroup", "1")));
+    }
+
+    private void releaseChosenGroupProperty() {
+        chosenGroup.addListener((observable, oldValue, newValue) -> formCache.setProperty("group", newValue));
+        chosenGroup.set(formCache.getProperty("group", ""));
+    }
+
+    public void setSpreadsheetSchedule(ScheduleSource spreadsheetSchedule) {
+        this.spreadsheetSchedule = spreadsheetSchedule;
     }
 
     public List<ScheduleDay> getScheduleDays() {
         return scheduleDays;
     }
 
+    public boolean isGroupExist(String group) {
+        return spreadsheetSchedule.getGroups().contains(group);
+    }
 }

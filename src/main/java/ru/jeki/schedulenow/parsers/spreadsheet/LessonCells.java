@@ -1,6 +1,5 @@
 package ru.jeki.schedulenow.parsers.spreadsheet;
 
-import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import ru.jeki.schedulenow.parsers.spreadsheet.mapper.DistributedLectureLessonCellMapper;
 import ru.jeki.schedulenow.parsers.spreadsheet.mapper.LabWorkLessonCellMapper;
@@ -12,7 +11,6 @@ import java.util.List;
 
 public class LessonCells {
 
-    private Logger logger = Logger.getLogger(getClass());
 
     private List<LocalCell> lessonCells;
 
@@ -25,16 +23,10 @@ public class LessonCells {
         LessonCellsMapper lessonCellsMapper = new NormalLectureLessonCellsMapper();
 
         if (isLessonDistributedLecture()) {
-            logger.debug("Reading lesson selected as distributed lecture");
             lessonCellsMapper = new DistributedLectureLessonCellMapper();
         } else if (isLessonLabWork()) {
-            logger.debug("Reading lesson selected as lab work");
             lessonCellsMapper = new LabWorkLessonCellMapper();
-        } else {
-            logger.debug("Reading lesson selected as normal lecture");
         }
-
-        logger.debug(lessonCells);
 
         return lessonCellsMapper.map(lesson, this);
     }

@@ -6,24 +6,18 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import ru.jeki.schedulenow.AlertBox;
 import ru.jeki.schedulenow.models.ScheduleModel;
 import ru.jeki.schedulenow.structures.Lesson;
 import ru.jeki.schedulenow.structures.ScheduleDay;
-import ru.jeki.schedulenow.structures.User;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ScheduleController implements Controller, Initializable {
 
-    private final Supplier<User> userSupplier;
     private ScheduleModel model;
     private List<ScheduleDay> scheduleDays;
 
@@ -36,9 +30,12 @@ public class ScheduleController implements Controller, Initializable {
 
     @FXML private ListView<String> daysListView;
 
-    public ScheduleController(Supplier<User> userSupplier, Properties configuration) {
-        this.userSupplier = userSupplier;
-        this.model = new ScheduleModel(configuration);
+    public void setModel(ScheduleModel model) {
+        if (this.model != null) {
+            throw new IllegalStateException("Model was already set");
+        }
+
+        this.model = model;
     }
 
     @Override
@@ -51,12 +48,12 @@ public class ScheduleController implements Controller, Initializable {
 
     @Override
     public void onSceneApply() {
-        try {
-            model.buildSchedule(userSupplier.get());
-        } catch (IOException | IllegalStateException e) {
-            AlertBox.display("ScheduleSource Now - Ошибка", "Возникла ошибка: \n" + e.getLocalizedMessage());
-            e.printStackTrace();
-        }
+//        try {
+//            //model.buildSchedule(userSupplier.getProperty());
+//        } catch (IllegalStateException e) {
+//            AlertBox.display("ScheduleSource Now - Ошибка", "Возникла ошибка: \n" + e.getLocalizedMessage());
+//            e.printStackTrace();
+//        }
 
         scheduleDays = model.getScheduleDays();
         daysListView.getItems().addAll(getReplacementDayNames());
@@ -87,4 +84,5 @@ public class ScheduleController implements Controller, Initializable {
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("There's no lessons by this day"))
                 .lessons().list();
     }
+
 }

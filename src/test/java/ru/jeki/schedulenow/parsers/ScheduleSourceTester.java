@@ -8,7 +8,6 @@ import java.util.List;
 
 public class ScheduleSourceTester {
 
-
     private final ScheduleSource scheduleSource;
 
     public ScheduleSourceTester(ScheduleSource scheduleSource) {

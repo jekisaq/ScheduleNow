@@ -9,5 +9,6 @@ public interface ScheduleSource {
 
     Set<String> getGroups();
     Lessons getDayLessons(String group, int subgroup, LocalDate date);
+    Set<LocalDate> getDayDates();
 
 }

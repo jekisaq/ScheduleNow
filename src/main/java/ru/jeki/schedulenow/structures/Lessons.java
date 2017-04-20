@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Lessons {
     private List<Lesson> lessonList = Lists.newArrayList();
@@ -48,7 +49,7 @@ public class Lessons {
 
     @Override
     public String toString() {
-        return "Weeks{" +
+        return "Lessons{" +
                 "lessonList=" + lessonList +
                 '}';
     }
@@ -72,5 +73,23 @@ public class Lessons {
 
     public void setGroup(String group) {
         lessonList.forEach(lesson -> lesson.setGroupName(group));
+    }
+
+    public void replaceAll(Lessons dayLessons) {
+        for (Lesson lesson : dayLessons.lessonList) {
+            filterByLessonNumber(lesson.getNumber());
+
+            lessonList.add(lesson);
+        }
+    }
+
+    private void filterByLessonNumber(int number) {
+        lessonList = lessonList.stream()
+                .filter(lesson -> lesson.getNumber() != number)
+                .collect(Collectors.toList());
+    }
+
+    public Stream<Lesson> stream() {
+        return lessonList.stream();
     }
 }
