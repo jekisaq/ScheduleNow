@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import ru.jeki.schedulenow.controllers.Controller;
+import ru.jeki.schedulenow.controller.Controller;
 
 import java.io.IOException;
 import java.util.Map;

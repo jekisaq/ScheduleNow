@@ -1,9 +1,9 @@
 package ru.jeki.schedulenow.schedule;
 
-import ru.jeki.schedulenow.parsers.ScheduleSource;
-import ru.jeki.schedulenow.structures.Lesson;
-import ru.jeki.schedulenow.structures.Lessons;
-import ru.jeki.schedulenow.structures.Weeks;
+import ru.jeki.schedulenow.entity.Lesson;
+import ru.jeki.schedulenow.entity.Lessons;
+import ru.jeki.schedulenow.entity.Weeks;
+import ru.jeki.schedulenow.parser.ScheduleSource;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -34,7 +34,11 @@ public class ReplacementScheduleMock implements ScheduleSource {
 
     @Override
     public Set<LocalDate> getDayDates() {
-        return null;
+        HashSet<LocalDate> localDates = new HashSet<>();
+
+        localDates.add(LocalDate.of(2017, 4, 10));
+
+        return localDates;
     }
 
 }

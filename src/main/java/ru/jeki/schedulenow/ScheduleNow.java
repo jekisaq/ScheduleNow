@@ -6,12 +6,13 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import ru.jeki.schedulenow.controllers.GroupChooseController;
-import ru.jeki.schedulenow.controllers.ScheduleController;
-import ru.jeki.schedulenow.models.ScheduleModel;
-import ru.jeki.schedulenow.parsers.ReplacementsParser;
-import ru.jeki.schedulenow.parsers.ScheduleSource;
-import ru.jeki.schedulenow.parsers.spreadsheet.SpreadsheetScheduleParser;
+import ru.jeki.schedulenow.controller.GroupChooseController;
+import ru.jeki.schedulenow.controller.ScheduleController;
+import ru.jeki.schedulenow.model.ScheduleModel;
+import ru.jeki.schedulenow.parser.ReplacementsParser;
+import ru.jeki.schedulenow.parser.ScheduleSource;
+import ru.jeki.schedulenow.parser.spreadsheet.SpreadsheetScheduleParser;
+import ru.jeki.schedulenow.schedule.CollapsedSchedule;
 import ru.jeki.schedulenow.services.ApplicationPropertyCache;
 import ru.jeki.schedulenow.services.SceneNavigationService;
 import ru.jeki.schedulenow.services.Services;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 public class ScheduleNow extends Application {
 
     private Properties configuration = new Properties();
-    private ScheduleSource replacementSchedule, spreadsheetSchedule;
+    private ScheduleSource replacementSchedule, spreadsheetSchedule, collapsedSchedule;
     private ApplicationPropertyCache appProperties = new ApplicationPropertyCache();
     private ScheduleModel scheduleModel = new ScheduleModel(appProperties);
     private SpreadsheetWorkbookProvider spreadsheetWorkbookProvider = new SiteSpreadsheetWorkbookProvider(configuration);
@@ -35,13 +36,23 @@ public class ScheduleNow extends Application {
     @Override
     public void init() throws Exception {
         loadConfiguration();
-        loadSchedule();
         loadScheduleModel();
+        loadSchedule();
     }
 
     private void loadSchedule() {
         loadReplacementSchedule();
         loadSpreadsheetSchedule();
+        loadCollapsedSchedule();
+    }
+
+    private void loadCollapsedSchedule() {
+        CollapsedSchedule collapsedSchedule = new CollapsedSchedule();
+
+        collapsedSchedule.add(spreadsheetSchedule);
+        collapsedSchedule.add(replacementSchedule);
+
+        this.collapsedSchedule = collapsedSchedule;
     }
 
     private void loadSpreadsheetSchedule() {
@@ -108,6 +119,8 @@ public class ScheduleNow extends Application {
 
     private void loadScheduleModel() {
         scheduleModel.setSpreadsheetSchedule(spreadsheetSchedule);
+        scheduleModel.setReplacementsSchedule(replacementSchedule);
+        scheduleModel.setCollapsedSchedule(collapsedSchedule);
     }
 
     private void loadConfiguration() {

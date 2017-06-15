@@ -1,8 +1,8 @@
 package ru.jeki.schedulenow.schedule;
 
 import com.google.common.collect.Lists;
-import ru.jeki.schedulenow.parsers.ScheduleSource;
-import ru.jeki.schedulenow.structures.Lessons;
+import ru.jeki.schedulenow.entity.Lessons;
+import ru.jeki.schedulenow.parser.ScheduleSource;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -36,6 +36,6 @@ public class CollapsedSchedule implements ScheduleSource {
 
     @Override
     public Set<LocalDate> getDayDates() {
-        return null;
+        return Collections.emptySet();
     }
 }

@@ -2,9 +2,9 @@ package ru.jeki.schedulenow.schedule;
 
 import org.junit.Before;
 import org.junit.Test;
-import ru.jeki.schedulenow.parsers.ScheduleSourceTester;
-import ru.jeki.schedulenow.structures.Lesson;
-import ru.jeki.schedulenow.structures.Weeks;
+import ru.jeki.schedulenow.entity.Lesson;
+import ru.jeki.schedulenow.entity.Weeks;
+import ru.jeki.schedulenow.parser.ScheduleSourceTester;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
