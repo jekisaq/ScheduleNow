@@ -1,6 +1,8 @@
 package ru.jeki.schedulenow.entity;
 
 public class ScheduleDay {
+    public static final ScheduleDay EMPTY = new ScheduleDay(Weeks.ANY, "");
+
     private Weeks week;
     private String dayOfWeekName;
     private Lessons lessons = new Lessons();

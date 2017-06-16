@@ -41,8 +41,8 @@ public class SpreadsheetScheduleParser implements ScheduleSource {
     }
 
     private void buildScheduleDayPlaceholders() {
-        groupToScheduleDays = getGroups().stream()
-                .collect(Collectors.toMap(Function.identity(), group -> getScheduleDaysPlaceholders()));
+        groupToScheduleDays.putAll(getGroups().stream()
+                .collect(Collectors.toMap(Function.identity(), group -> getScheduleDaysPlaceholders())));
     }
 
     private ArrayList<ScheduleDay> getScheduleDaysPlaceholders() {
@@ -68,12 +68,12 @@ public class SpreadsheetScheduleParser implements ScheduleSource {
         String dayOfWeek = date.getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("ru"));
         Weeks week = Weeks.of(date);
 
-        List<ScheduleDay> groupScheduleDays = groupToScheduleDays.get(group);
+        List<ScheduleDay> groupScheduleDays = groupToScheduleDays.getOrDefault(group, Collections.unmodifiableList(new ArrayList<>()));
 
         ScheduleDay day = groupScheduleDays.stream()
                 .filter(scheduleDay -> scheduleDay.getDayOfWeekName().equalsIgnoreCase(dayOfWeek))
                 .filter(scheduleDay -> scheduleDay.getWeek().equals(week))
-        .findAny().orElseThrow(IllegalArgumentException::new);
+        .findAny().orElse(ScheduleDay.EMPTY);
 
         return day.lessons().filterBy(subgroup);
     }

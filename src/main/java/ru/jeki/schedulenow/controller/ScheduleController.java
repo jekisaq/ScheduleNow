@@ -6,20 +6,20 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldListCell;
+import javafx.util.converter.LocalDateStringConverter;
 import ru.jeki.schedulenow.entity.Lesson;
-import ru.jeki.schedulenow.entity.ScheduleDay;
 import ru.jeki.schedulenow.model.ScheduleModel;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.FormatStyle;
 import java.util.Comparator;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class ScheduleController implements Controller, Initializable {
 
     private ScheduleModel model;
-    private List<ScheduleDay> scheduleDays;
 
     @FXML private TableView<Lesson> scheduleTable;
 
@@ -28,7 +28,7 @@ public class ScheduleController implements Controller, Initializable {
     @FXML private TableColumn<Lesson, String> cabinet;
     @FXML private TableColumn<Lesson, String> teacher;
 
-    @FXML private ListView<String> daysListView;
+    @FXML private ListView<LocalDate> daysListView;
 
     public void setModel(ScheduleModel model) {
         if (this.model != null) {
@@ -44,45 +44,16 @@ public class ScheduleController implements Controller, Initializable {
         subject.setCellValueFactory(new PropertyValueFactory<>("subject"));
         cabinet.setCellValueFactory(new PropertyValueFactory<>("cabinet"));
         teacher.setCellValueFactory(new PropertyValueFactory<>("teacher"));
+
+        daysListView.setCellFactory(TextFieldListCell.forListView(new LocalDateStringConverter(FormatStyle.MEDIUM)));
+
+        model.chosenDateProperty().bind(daysListView.getSelectionModel().selectedItemProperty());
+        scheduleTable.itemsProperty().bind(model.lessonListProperty());
     }
 
     @Override
     public void onSceneApply() {
-//        try {
-//            //model.buildSchedule(userSupplier.getProperty());
-//        } catch (IllegalStateException e) {
-//            AlertBox.display("ScheduleSource Now - Ошибка", "Возникла ошибка: \n" + e.getLocalizedMessage());
-//            e.printStackTrace();
-//        }
-
-        scheduleDays = model.getScheduleDays();
-        daysListView.getItems().addAll(getReplacementDayNames());
-    }
-
-    private List<String> getReplacementDayNames() {
-        return scheduleDays
-                .stream()
-                .map(ScheduleDay::getDayOfWeekName)
-                .map(this::makeFirstSymbolInUpperCase)
-                .collect(Collectors.toList());
-    }
-
-    private String makeFirstSymbolInUpperCase(String source) {
-        return source.substring(0, 1).toUpperCase() + source.substring(1);
-    }
-
-    @FXML private void onDayOfWeekChosen() {
-        String selectedDayName = daysListView.getSelectionModel().getSelectedItem();
-        List<Lesson> scheduleLessons = getScheduleDay(selectedDayName);
-        scheduleLessons.sort(Comparator.comparingInt(Lesson::getNumber));
-        scheduleTable.getItems().setAll(scheduleLessons);
-    }
-
-    private List<Lesson> getScheduleDay(String scheduleDayName) {
-        return scheduleDays.stream()
-                .filter(scheduleDay -> scheduleDay.getDayOfWeekName().equalsIgnoreCase(scheduleDayName))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("There's no lessons by this day"))
-                .lessons().list();
+        daysListView.getItems().addAll(model.scheduleDays().sorted(Comparator.reverseOrder()));
     }
 
 }

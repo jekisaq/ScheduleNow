@@ -36,8 +36,8 @@ public class ScheduleNow extends Application {
     @Override
     public void init() throws Exception {
         loadConfiguration();
-        loadScheduleModel();
         loadSchedule();
+        loadScheduleModel();
     }
 
     private void loadSchedule() {
@@ -121,6 +121,7 @@ public class ScheduleNow extends Application {
         scheduleModel.setSpreadsheetSchedule(spreadsheetSchedule);
         scheduleModel.setReplacementsSchedule(replacementSchedule);
         scheduleModel.setCollapsedSchedule(collapsedSchedule);
+        scheduleModel.init();
     }
 
     private void loadConfiguration() {
