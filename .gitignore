@@ -2,3 +2,16 @@
 .idea
 *.iml
 /cache/
+/build_Schedule Now.bat
+/Schedule Now.startup
+/Schedule Now.jpu
+/Schedule Now.vaz
+/Schedule Now.usg
+/Schedule Now.jpn
+/Schedule Now.prj
+/run_Schedule Now.bat
+/Schedule Now.log
+/Schedule Now.exe
+/Schedule Now-native/
+/Schedule Now_jetpdb/
+/Schedule Now_trial_run/

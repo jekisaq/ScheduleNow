@@ -66,7 +66,24 @@ public class SpreadsheetParserTests {
     }
 
     @Test
-    public void labWorkReadingTest() {
+    public void labWorkReadingSubgroup1Test() {
+        String group = "521";
+        int subgroup = 1;
+
+        List<Lesson> expectedLessons = Lists.newArrayList();
+        expectedLessons.add(new Lesson(1, group, subgroup,
+                "информатика", "207-4", "Паникаров", Weeks.NUMERATOR));
+        expectedLessons.add(new Lesson(2, group, subgroup,
+                "Устройство автомо", "204-4", "Поминова", Weeks.NUMERATOR));
+        expectedLessons.add(new Lesson(3, group, subgroup,
+                "Физ-ра", "", "Цыганенко", Weeks.NUMERATOR));
+
+        LocalDate numeratorTuesday = LocalDate.of(2017, 4, 11);
+        scheduleSourceTester.testLessons(expectedLessons, group, subgroup, numeratorTuesday);
+    }
+
+    @Test
+    public void labWorkReadingSubgroup2Test() {
         String group = "521";
         int subgroup = 2;
 

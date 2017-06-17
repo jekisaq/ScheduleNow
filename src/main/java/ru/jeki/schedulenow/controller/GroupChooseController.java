@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import org.apache.log4j.Logger;
 import ru.jeki.schedulenow.AlertBox;
+import ru.jeki.schedulenow.ScheduleNow;
 import ru.jeki.schedulenow.model.ScheduleModel;
 import ru.jeki.schedulenow.services.SceneNavigationService;
 import ru.jeki.schedulenow.services.Services;
@@ -97,4 +98,9 @@ public class GroupChooseController implements Controller {
             logger.error("There's no header in replacements", e);
         }
     }
+
+    @FXML private void openAbout() {
+        ScheduleNow.openAbout();
+    }
+
 }

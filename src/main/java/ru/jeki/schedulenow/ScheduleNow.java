@@ -1,6 +1,10 @@
 package ru.jeki.schedulenow;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jsoup.Connection;
@@ -160,5 +164,20 @@ public class ScheduleNow extends Application {
     @Override
     public void stop() throws Exception {
         appProperties.save();
+    }
+
+    public static void openAbout() {
+        FXMLLoader fxmlLoader = new FXMLLoader(ScheduleNow.class.getResource("/fxml/about.fxml"));
+        try {
+            Parent aboutRoot = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(aboutRoot));
+            stage.getIcons().add(new Image("icon32.png"));
+            stage.setTitle("О приложении");
+
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
