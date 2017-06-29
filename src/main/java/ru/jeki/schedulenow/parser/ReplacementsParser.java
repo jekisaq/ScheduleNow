@@ -5,6 +5,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.jeki.schedulenow.entity.Lesson;
 import ru.jeki.schedulenow.entity.Lessons;
+import ru.jeki.schedulenow.entity.Source;
 import ru.jeki.schedulenow.entity.Weeks;
 
 import java.time.LocalDate;
@@ -42,6 +43,7 @@ public class ReplacementsParser implements ScheduleSource {
 
             } else if (isLesson(entry) && parsingDate != null) {
                 Lesson lesson = parseLesson(entry.children(), Weeks.of(parsingDate));
+                lesson.setSource(Source.REPLACE);
                 dateToLessonsMap.get(parsingDate).add(lesson);
             }
 

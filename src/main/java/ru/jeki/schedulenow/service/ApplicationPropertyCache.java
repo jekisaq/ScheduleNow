@@ -1,4 +1,4 @@
-package ru.jeki.schedulenow.services;
+package ru.jeki.schedulenow.service;
 
 import ru.jeki.schedulenow.AlertBox;
 

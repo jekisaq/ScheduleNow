@@ -11,6 +11,7 @@ public class Lesson {
     private String cabinet;
     private String teacher;
     private Weeks week;
+    private Source source;
 
     public Lesson() {}
 
@@ -59,6 +60,8 @@ public class Lesson {
     public String getSubject() {
         return subject;
     }
+
+    public Lesson getSelf() {return this;}
 
 
     public String getTeacher() {
@@ -112,5 +115,13 @@ public class Lesson {
                 ", teacher='" + teacher + '\'' +
                 ", week=" + week +
                 '}';
+    }
+
+    public void setSource(Source source) {
+        this.source = source;
+    }
+
+    public Source getSource() {
+        return source;
     }
 }

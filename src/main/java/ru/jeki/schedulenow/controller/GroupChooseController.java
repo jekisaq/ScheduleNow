@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 import ru.jeki.schedulenow.AlertBox;
 import ru.jeki.schedulenow.ScheduleNow;
 import ru.jeki.schedulenow.model.ScheduleModel;
-import ru.jeki.schedulenow.services.SceneNavigationService;
-import ru.jeki.schedulenow.services.Services;
+import ru.jeki.schedulenow.service.SceneNavigationService;
+import ru.jeki.schedulenow.service.Services;
 
 import java.net.URL;
 import java.util.Properties;

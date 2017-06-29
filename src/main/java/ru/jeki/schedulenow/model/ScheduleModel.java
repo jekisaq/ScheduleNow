@@ -7,7 +7,7 @@ import javafx.collections.ObservableList;
 import ru.jeki.schedulenow.entity.Lesson;
 import ru.jeki.schedulenow.entity.Lessons;
 import ru.jeki.schedulenow.parser.ScheduleSource;
-import ru.jeki.schedulenow.services.ApplicationPropertyCache;
+import ru.jeki.schedulenow.service.ApplicationPropertyCache;
 
 import java.time.LocalDate;
 

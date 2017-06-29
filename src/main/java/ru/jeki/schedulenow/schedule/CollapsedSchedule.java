@@ -1,11 +1,13 @@
 package ru.jeki.schedulenow.schedule;
 
 import com.google.common.collect.Lists;
+import ru.jeki.schedulenow.entity.Lesson;
 import ru.jeki.schedulenow.entity.Lessons;
 import ru.jeki.schedulenow.parser.ScheduleSource;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -30,6 +32,8 @@ public class CollapsedSchedule implements ScheduleSource {
             Lessons dayLessons = scheduleSource.getDayLessons(group, subgroup, date);
             lessons.replaceAll(dayLessons);
         }
+
+        lessons.list().sort(Comparator.comparingInt(Lesson::getNumber));
 
         return lessons;
     }

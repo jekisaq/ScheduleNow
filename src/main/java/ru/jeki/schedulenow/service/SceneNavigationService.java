@@ -1,4 +1,4 @@
-package ru.jeki.schedulenow.services;
+package ru.jeki.schedulenow.service;
 
 import com.google.common.collect.Maps;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +25,7 @@ public class SceneNavigationService {
         navigableStage.setFullScreen(false);
         navigableStage.setTitle(configuration.getProperty("form.title"));
 
-        navigableStage.getIcons().add(new Image("icon32.png"));
+        navigableStage.getIcons().add(new Image("ico/app.png"));
     }
 
     public void apply(String sceneName) {

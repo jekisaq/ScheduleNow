@@ -3,10 +3,13 @@ package ru.jeki.schedulenow.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.util.converter.LocalDateStringConverter;
 import ru.jeki.schedulenow.entity.Lesson;
 import ru.jeki.schedulenow.model.ScheduleModel;
@@ -24,11 +27,13 @@ public class ScheduleController implements Controller, Initializable {
     @FXML private TableView<Lesson> scheduleTable;
 
     @FXML private TableColumn<Lesson, Integer> lessonNumber;
-    @FXML private TableColumn<Lesson, String> subject;
+    @FXML private TableColumn<Lesson, Lesson> subject;
     @FXML private TableColumn<Lesson, String> cabinet;
     @FXML private TableColumn<Lesson, String> teacher;
 
     @FXML private ListView<LocalDate> daysListView;
+
+
 
     public void setModel(ScheduleModel model) {
         if (this.model != null) {
@@ -41,7 +46,41 @@ public class ScheduleController implements Controller, Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         lessonNumber.setCellValueFactory(new PropertyValueFactory<>("number"));
-        subject.setCellValueFactory(new PropertyValueFactory<>("subject"));
+        subject.setCellValueFactory(new PropertyValueFactory<>("self"));
+
+        subject.setCellFactory(param ->
+            new TableCell<Lesson, Lesson>() {
+
+                private ImageView imageView = new ImageView();
+
+                {
+                    imageView.setFitHeight(16);
+                    imageView.setFitWidth(16);
+                }
+
+                @Override
+                protected void updateItem(Lesson lesson, boolean empty) {
+                    super.updateItem(lesson, empty);
+
+                    if (empty) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        setText(lesson.getSubject());
+
+                        Image sourceImg = lesson.getSource().getImage();
+                        if (sourceImg != null) {
+                            imageView.setImage(sourceImg);
+                            setGraphic(imageView);
+                        }
+
+                    }
+
+
+                }
+            }
+        );
+
         cabinet.setCellValueFactory(new PropertyValueFactory<>("cabinet"));
         teacher.setCellValueFactory(new PropertyValueFactory<>("teacher"));
 

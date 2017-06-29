@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import org.apache.poi.ss.usermodel.*;
 import ru.jeki.schedulenow.entity.Lessons;
 import ru.jeki.schedulenow.entity.ScheduleDay;
+import ru.jeki.schedulenow.entity.Source;
 import ru.jeki.schedulenow.entity.Weeks;
 import ru.jeki.schedulenow.parser.ScheduleSource;
 
@@ -80,7 +81,7 @@ public class SpreadsheetScheduleParser implements ScheduleSource {
 
     @Override
     public Set<LocalDate> getDayDates() {
-        return null;
+        return new HashSet<>();
     }
 
     public Set<String> getGroups() {
@@ -102,6 +103,7 @@ public class SpreadsheetScheduleParser implements ScheduleSource {
             Lessons parsedLesson = lessonCells.toLessons(iLesson);
             parsedLesson.removeEmptyLessons();
             parsedLesson.setGroup(group);
+            parsedLesson.setSource(Source.MAIN);
 
             parsingLessons.addAll(parsedLesson);
         }

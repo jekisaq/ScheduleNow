@@ -17,9 +17,9 @@ import ru.jeki.schedulenow.parser.ReplacementsParser;
 import ru.jeki.schedulenow.parser.ScheduleSource;
 import ru.jeki.schedulenow.parser.spreadsheet.SpreadsheetScheduleParser;
 import ru.jeki.schedulenow.schedule.CollapsedSchedule;
-import ru.jeki.schedulenow.services.ApplicationPropertyCache;
-import ru.jeki.schedulenow.services.SceneNavigationService;
-import ru.jeki.schedulenow.services.Services;
+import ru.jeki.schedulenow.service.ApplicationPropertyCache;
+import ru.jeki.schedulenow.service.SceneNavigationService;
+import ru.jeki.schedulenow.service.Services;
 import ru.jeki.schedulenow.spreadsheet.SpreadsheetScheduleSource;
 import ru.jeki.schedulenow.spreadsheet.providers.SiteSpreadsheetWorkbookProvider;
 import ru.jeki.schedulenow.spreadsheet.providers.SpreadsheetWorkbookProvider;
@@ -172,7 +172,7 @@ public class ScheduleNow extends Application {
             Parent aboutRoot = fxmlLoader.load();
             Stage stage = new Stage();
             stage.setScene(new Scene(aboutRoot));
-            stage.getIcons().add(new Image("icon32.png"));
+            stage.getIcons().add(new Image("ico/app.png"));
             stage.setTitle("О приложении");
 
             stage.showAndWait();

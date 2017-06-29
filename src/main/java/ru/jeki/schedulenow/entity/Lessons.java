@@ -92,4 +92,8 @@ public class Lessons {
     public Stream<Lesson> stream() {
         return lessonList.stream();
     }
+
+    public void setSource(Source source) {
+        lessonList.forEach(lesson -> lesson.setSource(source));
+    }
 }

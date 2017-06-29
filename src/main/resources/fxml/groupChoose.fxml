@@ -73,6 +73,6 @@
       <cursor>
          <Cursor fx:constant="HAND"/>
       </cursor>
-      <Image url="@/card-icon.png"/>
+      <Image url="@/ico/card-icon.png"/>
    </ImageView>
 </AnchorPane>
